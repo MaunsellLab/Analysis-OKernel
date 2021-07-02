@@ -5,9 +5,12 @@ optoProfiles.missProfiles = [];
 optoProfiles.earlyProfiles = [];
 optoProfiles.RTProfiles = [];
 optoProfiles.stimRTProfiles = [];
+[dirName, ~] = whichData();
 for i = 1:height(T)
-  load(strcat('/Users/Shared/Data/OKernel/ Analysis/Mat Files/Stim Profiles/', T.animal(i), '/', T.date(i), '.mat'),...
-        'stimProfiles'); 
+% dirName = '/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/BehavData/30 PC/';
+%   load(strcat('/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/BehavData/10 PC/ Analysis/Mat Files/Stim Profiles/', T.animal(i), '/', T.date(i), '.mat'),...
+%         'stimProfiles'); 
+  load(strcat(dirName, ' Analysis/Mat Files/Stim Profiles/', T.animal(i), '/', T.date(i), '.mat'), 'stimProfiles'); 
   optoProfiles.hitProfiles = [optoProfiles.hitProfiles; stimProfiles.hitProfiles];
   optoProfiles.missProfiles = [optoProfiles.missProfiles; stimProfiles.missProfiles];
   optoProfiles.earlyProfiles = [optoProfiles.earlyProfiles; stimProfiles.earlyProfiles];

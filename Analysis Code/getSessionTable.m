@@ -13,10 +13,9 @@ function [U, dataDirName, limits] = getSessionTable(theSubset)
     T = [];
     return;
   end
-  controls = controlSessions(T);                                  % logic array flagging control sesions
-  valid = any(T.rampMS == limits.rampMS & T.kernelCI > 0, 2) & ~controls; % empty entries have zero for kernelCI
+  valid = any(T.rampMS == limits.rampMS & T.kernelCI > 0, 2);         % empty entries have zero for kernelCI
   if ~strcmp(limits.animal, 'All')
-    valid = valid & T.animal == limits.animal;
+    valid = valid & sum(T.animal == limits.animal, 2);
   end
   if ~isempty(limits.oneDay)
     valid = valid & T.date == limits.oneDay;
@@ -37,7 +36,7 @@ function [U, dataDirName, limits] = getSessionTable(theSubset)
     valid = valid & T.meanPowerMW <= limits.maxMeanPowerMW;
   end
   U = T(valid, :);
- 	U.dPrime(U.dPrime == Inf) = NaN; 
+%  	U.dPrime(U.dPrime == Inf) = NaN; 
 	U.noStimDPrime(U.noStimDPrime == Inf) = NaN; 
 	U.stimDPrime(U.stimDPrime == Inf) = NaN; 
  
@@ -61,80 +60,53 @@ function [U, dataDirName, limits] = getSessionTable(theSubset)
   end
   if size(U, 1) == 0
     if length(limits.rampMS) == 1
-      fprintf('getSessionTable: No valid sessions found for ''%s'' for animal ''%s'' on %d ms ramps, minTrials %d and decrement %.2f\n', ...
-        mode, limits.animal, limits.rampMS, limits.minTrials, limits.minDec);
+      fprintf('getSubset: No valid sessions found for %d ms ramps, minTrials %d and decrement %.2f\n', ...
+        limits.rampMS, limits.minTrials, limits.minDec);
     else
-      fprintf('getSessionTable: No valid sessions found for ''%s'' for animal ''%s'' on multiple ramps, minTrials %d and decrement %.2f\n', ...
-        mode, limits.animal, limits.minTrials, limits.minDec);
+      fprintf('getSubset: No valid sessions found for multiple ramps, minTrials %d and decrement %.2f\n', ...
+        limits.minTrials, limits.minDec);
     end
   end
 end
 
-%%
-function controls = controlSessions(T)
-
-% control measurement sesssion.  These are contralateral stimulation
-% controls that should be excluded from general analysis
-
-  cSessions = {
-    {'1218', {'2020-06-06', '2020-06-07', '2020-06-08', '2020-06-09', '2020-06-10', '2020-06-11', '2020-06-12', ...
-              '2020-06-13', '2020-06-14', '2020-06-15', '2020-06-16'}},...
-    {'1220', {'2020-06-22', '2020-06-23', '2020-06-24', '2020-06-25', '2020-06-26', '2020-06-27', '2020-06-28'}},...
-    {'1257', {'2020-05-30', '2020-05-31', '2020-06-01', '2020-06-02', '2020-06-03', '2020-06-04', '2020-06-05', ...
-              '2020-06-06', '2020-06-07', '2020-06-08', '2020-06-09', '2020-06-10', '2020-06-11', '2020-06-12', ...
-              '2020-06-13', '2020-06-14'}},...
-  };
-  
-  controls = false(height(T), 1);
-  for a = 1:length(cSessions)
-    for d = 1:length(cSessions{a}{2})
-      controls = controls | (T.animal == cSessions{a}{1} & T.date == cSessions{a}{2}{d});
-    end
-  end
-end
-
-function controls = prePostControlSessions(T)
-
-% control measurement sesssion.  These are a subset of normal stimulation
-% sessions that were done immediately before and after the control stimulation
-% session.  They are matched in number to the control stimulation sessions
-% to keep the S/N balanced between the two
-
-  cSessions = {
-    {'1218', {'2020-06-01', '2020-06-02', '2020-06-03', '2020-06-04', '2020-06-05', ...
-              '2020-06-21', '2020-06-22', '2020-06-23', '2020-06-24', '2020-06-25'}},...
-    {'1220', {'2020-06-17', '2020-06-18', '2020-06-19', '2020-06-20', '2020-06-21'}},...
-    {'1257', {'2020-05-25', '2020-05-26', '2020-05-27', '2020-05-28', '2020-05-29', ...
-              '2020-06-21', '2020-06-22', '2020-06-23', '2020-06-24', '2020-06-25'}},...
-  };
-  
-  controls = false(height(T), 1);
-  for a = 1:length(cSessions)
-    for d = 1:length(cSessions{a}{2})
-      controls = controls | (T.animal == cSessions{a}{1} & T.date == cSessions{a}{2}{d});
-    end
-  end
-end
-
-function controls = controlTestSessions(T)
-
-% control measurement sesssion. These are contralateral stimulation
-% controls that should be excluded from general analysis.  This list is
-% balanced to have the same number of sessions as the pre/post control
-% measurements, to keep the S/N balanced between the two.
-
-  cSessions = {
-    {'1218', {'2020-06-07', '2020-06-08', '2020-06-09', '2020-06-10', '2020-06-11', ...
-              '2020-06-12', '2020-06-13', '2020-06-14', '2020-06-15', '2020-06-16'}},...
-    {'1220', {'2020-06-22', '2020-06-23', '2020-06-24', '2020-06-25', '2020-06-28'}},...
-    {'1257', {'2020-06-04', '2020-06-05', '2020-06-06', '2020-06-07', '2020-06-09', ...
-              '2020-06-10', '2020-06-11', '2020-06-12', '2020-06-13', '2020-06-14'}},...
-  };
-  
-  controls = false(height(T), 1);
-  for a = 1:length(cSessions)
-    for d = 1:length(cSessions{a}{2})
-      controls = controls | (T.animal == cSessions{a}{1} & T.date == cSessions{a}{2}{d});
-    end
+function limits = setLimits(theSubset)
+  % Set up the default selection criteria
+  limits.minSessions = 0;                	% require at least n sessions for each animal
+  limits.minTrials = 0;
+  limits.criterion = 0;
+  limits.minDec = -1;
+  limits.minDPrime = -1;
+  limits.minAvgDeltaDPrime = 0.10;
+  limits.maxMeanPowerMW = 0.25;
+  limits.animal = {'All'};
+  limits.oneDay = [];
+  switch theSubset
+    case {'Unfiltered', 'unfiltered'}
+      limits.minSessions = 0;
+      limits.minDec = -1;
+      limits.minDPrime = -1;
+      limits.minAvgDeltaDPrime = -1;
+      limits.maxMeanPowerMW = 0.25;
+      limits.rampMS = [0, 500];
+    case {'All', 'all', 'all steps', 'All Steps', 'All steps', 'all ramps', 'All ramps', 'All Ramps'}
+      switch theSubset
+        case {'All', 'all'}
+          limits.rampMS = [0, 500];
+        case {'all steps', 'All Steps', 'All steps'}
+          limits.rampMS = 0;
+        case {'all ramps', 'All ramps', 'All Ramps'}
+          limits.rampMS = 500;
+      end
+    case {'Example', 'example'}
+      limits.rampMS = 0;
+      limits.animal = {'902'};
+      limits.oneDay = '2019-10-10';
+    case {'oneOff', 'oneoff', 'One Off'}
+      limits.rampMS = 0;
+      limits.animal = {'1462', '1463'};
+    otherwise
+      fprintf('getSessionTable: unrecognized table type ''%s''\n', theSubset);
+      limits = [];
+      return;
   end
 end
