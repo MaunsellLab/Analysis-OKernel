@@ -1,5 +1,14 @@
-function [dirName, tableName, projName] = whichData()
+function [dataDirName, analysisDirName, tableName] = whichData()
 
-projName = 'JDC';
-tableName = sprintf(' Analysis/Mat Files/masterTable.mat');
-dirName = '/Users/Shared/Data/OKernel/';
+% tableName = sprintf('Analysis/Mat Files/masterTable.mat');
+% dirName = '/Users/Shared/Data/SCernel/';
+
+tableName = sprintf('Mat Files/masterTable.mat');
+if contains(computerName(), 'maunsell')
+	dataDirName = '../../../Data/OKernel/';
+	analysisDirName = '../../Analysis-OKernel/';
+else
+	dataDirName = '/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/BehavData/30 PC/';
+	analysisDirName = '../../Analysis-OKernel/';
+end
+

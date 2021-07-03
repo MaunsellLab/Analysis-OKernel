@@ -2,17 +2,11 @@ function individualKernels
 % Plot all the kernels for the grand average across selected sessions, once for steps and once for ramps
 
   rampMS = 0;
-  animals = {'902', '1112', '1145', '905', '1223'};
-
-%   rampMS = 500;
-%   animals = {'902', '1112', '1150'};
+  animals = {'1462', '1463'};
   
-  h = figure(2);
-  set(h, 'Units', 'inches', 'Position', [25, 1.25, 8.5, 11]);
-  clf;
+  [~, analysisDataDir, tableName] = whichData();
+  load([analysisDataDir tableName], 'T');
   
-	dataDirName = '/Users/Shared/Data/OKernel/';
-  load([dataDirName ' Analysis/Mat Files/masterTable.mat'], 'T');
   limits = setLimits('All');
   limits.rampMS = rampMS;
   for a = 1:length(animals)
@@ -20,13 +14,15 @@ function individualKernels
     limits.animal = animals{a};
     U = selectUsingLimits(T, limits);
     if height(U) == 0
-      return;
+      continue;
     end
     stimProfiles = getOptoProfiles(U);
     plotKernelPage(U, limits, stimProfiles);
-    saveas(gcf, sprintf('%s Analysis/Figures/Kernels/Ramp %d %s.pdf', dataDirName, limits.rampMS, limits.animal));
+    saveas(gcf, sprintf('%sFigures/Kernels/Ramp %d %s.pdf', analysisDataDir, limits.rampMS, limits.animal));
   end
-  figure(2);
-  sameAxisScaling('both', 4, 3, 1:length(animals));
-  saveas(gcf, sprintf('%s Analysis/Figures/Kernels/Ramp %d Individuals.pdf', dataDirName, limits.rampMS));
+  % This isn't plotting anything right now, eventually when we have many
+  % mice we will want to plot all the kernels on the same axes.
+%   figure(2); 
+%   sameAxisScaling('both', 1, 3, 1:length(animals));
+%   saveas(gcf, sprintf('%s Analysis/Figures/Kernels/Ramp %d Individuals.pdf', dataDirName, limits.rampMS));
 end

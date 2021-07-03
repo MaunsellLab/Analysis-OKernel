@@ -3,12 +3,12 @@ function plotKernelPage(U, limits, stimProfiles)
   display(U);
   [plotStartMS, plotEndMS, plotRTStartMS] = plotLimits();
   
-  h = figure(1);
+  h = figure;
   set(h, 'Units', 'inches', 'Position', [25, 1.25, 8.5, 11]);
   clf;
   ylabel = 'Normalized Power';
   limits.yAxis = 0.5;
-  limits.numBoot = 10;
+  limits.numBoot = 250;
   
   % hit kernel
   numHits = size(stimProfiles.hitProfiles, 1);
@@ -25,18 +25,18 @@ function plotKernelPage(U, limits, stimProfiles)
   % total kernel trials weighted across all trials. We need to multiple the weighted sum by 2 because it is effectively
   % a mean of the hit and miss kernels, not a difference. By taking the mean, we lose the doubling that we should get
   % from the opposing effects.  This has been validated in simulations. 
-  plotTitle = sprintf('Weight by Trial (n=%d)', numHits + numMisses);
+  plotTitle = sprintf('Total Kernel (n=%d)', numHits + numMisses);
   limits.yAxis = 0.0;
   hitMissBoot = [stimProfiles.hitProfiles; -stimProfiles.missProfiles];
   subplot(4, 3, 6);
   doOneBootPlot(hitMissBoot, limits, 'stim', plotStartMS, plotEndMS, plotTitle, '');
-  if ~strcmp(limits.animal, 'All')
-    figure(2);
-    h = subplot(4, 3, limits.aniNum);
-    doOneBootPlot(hitMissBoot, limits, 'stim', plotStartMS, plotEndMS, plotTitle, '');
-    h.Title.String = strrep(h.Title.String, 'Weight by Trial', ['Animal ', limits.animal]);
-    figure(1);
-  end
+%   if ~strcmp(limits.animal, 'All')
+%     figure(2);
+%     h = subplot(4, 3, limits.aniNum);
+%     doOneBootPlot(hitMissBoot, limits, 'stim', plotStartMS, plotEndMS, plotTitle, '');
+%     h.Title.String = strrep(h.Title.String, 'Weight by Trial', ['Animal ', limits.animal]);
+%     figure(1);
+%   end
   
   % RT aligned kernel
   limits.yAxis = 0.5;
@@ -69,14 +69,20 @@ function plotKernelPage(U, limits, stimProfiles)
       doOneBootPlot(hitMissBoot, limits, 'stim', plotStartMS, plotEndMS, plotTitle, '');
   end  
   
-  %% Compile and plot the RT distributions
+  %% Compile and plot the RT distributions % Stimulated Case Only
   minRespTimeMS = min(U.startRT(:));
   maxRespTimeMS = min(U.endRT(:));
-  correctRTs = cat(2, U.correctRTs{:});
-  earlyRTs = cat(2, U.earlyRTs{:});
+  % Uncomment if you want to see Top Ups
+  % correctRTs = cat(2, U.topUpCorrectRTs{:}); 
+  
+  % Corrects for tested contrast only
+  correctRTs = [cat(2, U.noStimCorrectRTs{:}), cat(2, U.stimCorrectRTs{:})];
+  % Earlies for all trials regardless of contrast
+  earlyRTs = [cat(2, U.topUpEarlyRTs{:}), cat(2, U.noStimEarlyRTs{:}), cat(2, U.stimEarlyRTs{:})];
+  
   failRTs = cat(2, U.failRTs{:});
   doRTHistogramPlot(correctRTs, earlyRTs, failRTs, minRespTimeMS, maxRespTimeMS);
-  doRTPDFPlot(correctRTs, earlyRTs, failRTs, minRespTimeMS, maxRespTimeMS)
+  doRTPDFPlot(correctRTs, earlyRTs, failRTs, minRespTimeMS, maxRespTimeMS);
 
   % Coordinate the scaling across plots
   sameYAxisScaling(4, 3, [4, 5, 7, 8, 10]);

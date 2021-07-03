@@ -5,8 +5,8 @@ function plotDiffDeltaDPs
 Try taking each animal and splitting them into high/low delta-d' sessions (median split).
 Might also do this by trials instead, to keep things balanced on significance. 
 %}
-	dataDirName = '/Users/Shared/Data/OKernel/';
-  load([dataDirName ' Analysis/Mat Files/masterTable.mat'], 'T');
+  [~, analysisDirName] = whichData();
+  load([analysisDirName 'Mat Files/masterTable.mat'], 'T');
 
 %   animal = {'902', '1112', '1150'};
 %   limits = setLimits('All Ramps');
@@ -75,7 +75,6 @@ function doDDPFigure(dataDirName, smallDPs, bigDPs, limits)
   plotTitle = sprintf('Hit Kernel (n=%d)', numHits);
   subplot(4, 3, 7);
   bigHitCIs = doOneBootPlot(bigBootstraps.hitProfiles / 2 + 0.5, limits, 'stim', plotStartMS, plotEndMS, plotTitle, ylabel);
-%   save([dataDirName, ' Analysis/Mat Files/', dataName, ' ', limits.animal{1}, ' Hit Kernel'], 'CIs');
   
   % miss kernel
   numMisses = size(bigBootstraps.missProfiles, 1);
@@ -185,7 +184,6 @@ function doPowerFigure(dataDirName, smallPowers, bigPowers, limits)
   plotTitle = sprintf('Hit Kernel (n=%d)', numHits);
   subplot(4, 3, 7);
   bigHitCIs = doOneBootPlot(bigBootstraps.hitProfiles / 2 + 0.5, limits, 'stim', plotStartMS, plotEndMS, plotTitle, ylabel);
-%   save([dataDirName, ' Analysis/Mat Files/', dataName, ' ', limits.animal{1}, ' Hit Kernel'], 'CIs');
   
   % miss kernel
   numMisses = size(bigBootstraps.missProfiles, 1);

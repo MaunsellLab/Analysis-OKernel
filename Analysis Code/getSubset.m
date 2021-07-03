@@ -1,18 +1,12 @@
-function [U, maxDate] = getSubset(mode, dataDirName, tableDataName, limits)
+function U = getSubset(mode, dataDirName, tableDataName, limits)
   % Return a subset of files based on selection criteria.
   % If necessary, a new table of summary results will be compiled.
     
-  [T, maxDate] = getTable(dataDirName, tableDataName);                % get table of all sessions
+  T = getTable(dataDirName, [dataDirName, tableDataName]);                % get table of all sessions
   switch mode
     case 'normal'
       controls = controlSessions(T);                                  % logic array flagging control sesions
       valid = any(T.rampMS == limits.rampMS & T.kernelCI > 0, 2) & ~controls; % empty entries have zero for kernelCI
-    case 'control'
-       controls = controlTestSessions(T);                         	  % logic array flagging control test sesions
-       valid = any(T.rampMS == limits.rampMS & T.kernelCI > 0, 2) & controls; % empty entries have zero for kernelCI
-   case 'prePostControl'
-       controls = prePostControlSessions(T);                         	% logic array flagging control test sesions
-       valid = any(T.rampMS == limits.rampMS & T.kernelCI > 0, 2) & controls; % empty entries have zero for kernelCI
     otherwise
       fprintf('getSubset: unrecognized mode');
   end
@@ -38,12 +32,11 @@ function [U, maxDate] = getSubset(mode, dataDirName, tableDataName, limits)
     valid = valid & T.meanPowerMW <= limits.maxMeanPowerMW;
   end
   U = T(valid, :);
-  U = withoutTrainingDays(U);                                         % remove sessions from training periods
  	U.dPrime(U.dPrime == Inf) = NaN; 
 	U.noStimDPrime(U.noStimDPrime == Inf) = NaN; 
 	U.stimDPrime(U.stimDPrime == Inf) = NaN; 
  
-  % Some limits related to multi-session performance.  We can require a minimum number of sessions for each animal/ramp,
+  % Some limits related to over-session performance.  We can requie a minimum number of sessions for each animal/ramp,
   % and a minimum average delta-d'.
   if isempty(limits.oneDay)
     animals = unique(U.animal);
@@ -78,75 +71,6 @@ function [U, maxDate] = getSubset(mode, dataDirName, tableDataName, limits)
 end
 
 %%
-function controls = controlSessions(T)
-
-% control measurement sesssion.  These are contralateral stimulation
-% controls that should be excluded from general analysis
-
-  cSessions = {
-    {'1218', {'2020-06-06', '2020-06-07', '2020-06-08', '2020-06-09', '2020-06-10', '2020-06-11', '2020-06-12', ...
-              '2020-06-13', '2020-06-14', '2020-06-15', '2020-06-16'}},...
-    {'1220', {'2020-06-22', '2020-06-23', '2020-06-24', '2020-06-25', '2020-06-26', '2020-06-27', '2020-06-28'}},...
-    {'1257', {'2020-05-30', '2020-05-31', '2020-06-01', '2020-06-02', '2020-06-03', '2020-06-04', '2020-06-05', ...
-              '2020-06-06', '2020-06-07', '2020-06-08', '2020-06-09', '2020-06-10', '2020-06-11', '2020-06-12', ...
-              '2020-06-13', '2020-06-14'}},...
-  };
-  
-  controls = false(height(T), 1);
-  for a = 1:length(cSessions)
-    for d = 1:length(cSessions{a}{2})
-      controls = controls | (T.animal == cSessions{a}{1} & T.date == cSessions{a}{2}{d});
-    end
-  end
-end
-
-function controls = prePostControlSessions(T)
-
-% control measurement sesssion.  These are a subset of normal stimulation
-% sessions that were done immediately before and after the control stimulation
-% session.  They are matched in number to the control stimulation sessions
-% to keep the S/N balanced between the two
-
-  cSessions = {
-    {'1218', {'2020-06-01', '2020-06-02', '2020-06-03', '2020-06-04', '2020-06-05', ...
-              '2020-06-21', '2020-06-22', '2020-06-23', '2020-06-24', '2020-06-25'}},...
-    {'1220', {'2020-06-17', '2020-06-18', '2020-06-19', '2020-06-20', '2020-06-21'}},...
-    {'1257', {'2020-05-25', '2020-05-26', '2020-05-27', '2020-05-28', '2020-05-29', ...
-              '2020-06-21', '2020-06-22', '2020-06-23', '2020-06-24', '2020-06-25'}},...
-  };
-  
-  controls = false(height(T), 1);
-  for a = 1:length(cSessions)
-    for d = 1:length(cSessions{a}{2})
-      controls = controls | (T.animal == cSessions{a}{1} & T.date == cSessions{a}{2}{d});
-    end
-  end
-end
-
-function controls = controlTestSessions(T)
-
-% control measurement sesssion. These are contralateral stimulation
-% controls that should be excluded from general analysis.  This list is
-% balanced to have the same number of sessions as the pre/post control
-% measurements, to keep the S/N balanced between the two.
-
-  cSessions = {
-    {'1218', {'2020-06-07', '2020-06-08', '2020-06-09', '2020-06-10', '2020-06-11', ...
-              '2020-06-12', '2020-06-13', '2020-06-14', '2020-06-15', '2020-06-16'}},...
-    {'1220', {'2020-06-22', '2020-06-23', '2020-06-24', '2020-06-25', '2020-06-28'}},...
-    {'1257', {'2020-06-04', '2020-06-05', '2020-06-06', '2020-06-07', '2020-06-09', ...
-              '2020-06-10', '2020-06-11', '2020-06-12', '2020-06-13', '2020-06-14'}},...
-  };
-  
-  controls = false(height(T), 1);
-  for a = 1:length(cSessions)
-    for d = 1:length(cSessions{a}{2})
-      controls = controls | (T.animal == cSessions{a}{1} & T.date == cSessions{a}{2}{d});
-    end
-  end
-end
-
-%%
 function fileNames = getFileNames(dirName)
 
     dirStructs = dir(dirName);                              % data directory contents
@@ -162,38 +86,31 @@ function fileNames = getFileNames(dirName)
     fileNames = {fileNames{indices}};
 end
 
-% function indices = getAllIndices(trials, eotCodes, stimIndices)
-% %
-% % Return logical arrays specifying valid indices for hit, fail and early trials.  The lists are modified
-% % according to trialType, which can select all, stimulated, or unstimulated trials.
-% 
-%   trialStructs = [trials(:).trial];                           % extract trialStructs to an array for access
-%   RTs = [trials(:).reactTimeMS];                              % get all trial RTs
-%   selectIndices = true(1, length(stimIndices));            % take all trials
-% 	indices.correct = selectIndices & eotCodes == 0;            % get hit trials
-%   indices.early = selectIndices & eotCodes == 1;              % get early trials
-%   indices.fail = selectIndices & eotCodes == 2;               % get fail trials
-%   
-%   % for earlies, we must eliminate those that don't have enough time before the FA to avoid sampling before 
-%   % the end of the ramp (which is fixed at 200 ms). 
-%   preStimMS = [trialStructs(:).preStimMS];                  	% get preStim times for each trial
-%   [~, ~, plotRTStartMS] = plotLimits();                       % get the limits for the plots we will make
-%   indices.early = (selectIndices & eotCodes == 1) & (preStimMS + RTs + plotRTStartMS > 200);
-% end
-
 %%
 function row = getKernels(file, trials, row)
 %
 % Compute kernels for one session
 %
-  [stimIndices, trials] = getStimIndices(trials);
-  if sum(stimIndices) == 0
-    return
-  end  
+  trialStructs = [trials(:).trial];
   meanPower = [trials(:).meanPowerMW];                        % get power applied for each trial 
   row.meanPowerMW = mean(meanPower);
   row.maxPowerMW = max(meanPower);
-  trialStructs = [trials(:).trial];
+  if isfield(trialStructs, 'pulseContrast')                   % get rid of any trials with reduced opto power
+      stimIndices = meanPower > 0 & [trialStructs.pulseContrast] == 1;	% only trials with contrast == 1
+  else
+      stimIndices = meanPower > 0;
+  end
+  if sum(stimIndices) == 0                                    % no stimulation with full opto contrast
+    return;
+  end
+  
+  % we only consider the range between the first and last stimulated trials
+  firstStimIndex = find(stimIndices > 0, 1);                 	% first stimulated trial
+	lastStimIndex = find(stimIndices > 0, 1, 'last');          	% last stimulated trial
+  trials = trials(firstStimIndex:lastStimIndex);
+  trialStructs = trialStructs(firstStimIndex:lastStimIndex);
+  stimIndices = stimIndices(firstStimIndex:lastStimIndex);
+  
   eotCodes = zeros(1, length(trials));                        % one and only one RT and endTrial per trial
   for t = 1:length(trials)                               
       if length(trials(t).reactTimeMS) > 1
@@ -244,8 +161,6 @@ function row = getKernels(file, trials, row)
     row.noStimPFA = 1.0 - exp(-rateEarly * row.RTWindowMS / 1000.0);
     row.noStimPHit = (hitRate - row.pFA) / (1.0 - row.pFA);         % using overall pFA
     [row.noStimDPrime, row.noStimC] = dprime(row.noStimPHit, row.pFA, true);
-%     fprintf('  No Stim: pFA = %.2f, pHit = %.2f d-prime = %.1f, c = %.1f\n', ...
-%               row.noStimPFA, row.noStimPHit, row.noStimDPrime, row.noStimC);
   end
     
   % calculate the stim trial d' using the all-trial pFA and the all-trial response window
@@ -258,8 +173,6 @@ function row = getKernels(file, trials, row)
     row.stimPFA = 1.0 - exp(-rateEarly * row.RTWindowMS / 1000.0);
     row.stimPHit = (hitRate - row.pFA) / (1.0 - row.pFA);   % using overall pFA
     [row.stimDPrime, row.stimC] = dprime(row.stimPHit, row.pFA, true);
-%     fprintf('  Stim:    pFA = %.2f, pHit = %.2f d-prime = %.1f, c = %.1f  delta: %.5f\n', ...
-%               row.stimPFA, row.stimPHit, row.stimDPrime, row.stimC, row.noStimDPrime - row.stimDPrime);
   end
   
   % get the various kernels.  We use the indices set up in the previous block that include only stimulated trials.
@@ -457,20 +370,4 @@ meanPower = (max(max(profiles)) + min(min(profiles))) / 2.0;
 profiles(profiles < meanPower) = 0;
 profiles(profiles >= meanPower) = 1;
 normSums = sum(profiles, 1);                                    % summed normalized profiles
-end
-
-%%
-function U = withoutTrainingDays(U)
-
-	trainingDays = ...
-    (U.animal == '902' & U.date < '2019-09-13') | ...
-    (U.animal == '905' & U.date < '2019-09-24') | ...
-    (U.animal == '1112' & U.date < '2020-02-04') | ...
-    (U.animal == '1145' & U.date < '2020-02-10') | ...
-    (U.animal == '1150' & U.date < '2020-01-16') | ...
-    (U.animal == '1218' & U.date < '2020-03-23') | ...
-    (U.animal == '1220' & U.date < '2020-04-07') | ...
-    (U.animal == '1223' & U.date < '2020-02-16') | ...
-    (U.animal == '1257' & U.date < '2020-04-04');    
-  U = U(~trainingDays, :);
 end
