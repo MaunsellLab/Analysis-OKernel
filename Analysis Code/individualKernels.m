@@ -4,10 +4,8 @@ function individualKernels
   rampMS = 0;
   animals = {'1462', '1463'};
   
-%   dataDirName = '/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/BehavData/10 PC/';
-%   load([dataDirName ' Analysis/Mat Files/masterTable.mat'], 'T');
-  [dataDirName, tableName] = whichData();
-  load([dataDirName tableName], 'T');
+  [~, analysisDataDir, tableName] = whichData();
+  load([analysisDataDir tableName], 'T');
   
   limits = setLimits('All');
   limits.rampMS = rampMS;
@@ -20,7 +18,7 @@ function individualKernels
     end
     stimProfiles = getOptoProfiles(U);
     plotKernelPage(U, limits, stimProfiles);
-    saveas(gcf, sprintf('%s Analysis/Figures/Kernels/Ramp %d %s.pdf', dataDirName, limits.rampMS, limits.animal));
+    saveas(gcf, sprintf('%sFigures/Kernels/Ramp %d %s.pdf', analysisDataDir, limits.rampMS, limits.animal));
   end
   % This isn't plotting anything right now, eventually when we have many
   % mice we will want to plot all the kernels on the same axes.

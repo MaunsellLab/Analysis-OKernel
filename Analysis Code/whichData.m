@@ -1,12 +1,14 @@
-function [dirName, tableName] = whichData()
+function [dataDirName, analysisDirName, tableName] = whichData()
 
 % tableName = sprintf('Analysis/Mat Files/masterTable.mat');
 % dirName = '/Users/Shared/Data/SCernel/';
 
-tableName = sprintf(' Analysis/Mat Files/masterTable.mat');
+tableName = sprintf('Mat Files/masterTable.mat');
 if contains(computerName(), 'maunsell')
-	dirName = '../../';
+	dataDirName = '../../../Data/OKernel/';
+	analysisDirName = '../../Analysis-OKernel/';
 else
-	dirName = '/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/BehavData/30 PC/';
+	dataDirName = '/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/BehavData/30 PC/';
+	analysisDirName = '../../Analysis-OKernel/';
 end
 

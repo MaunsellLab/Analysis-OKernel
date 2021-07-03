@@ -1,4 +1,4 @@
-function [U, dataDirName, limits] = getSessionTable(theSubset)
+function [U, limits] = getSessionTable(theSubset)
 %
 % Return a subset of the complete session table.  This function serves as an authoritative selector for the subset
 % of ssessions used for the various analyses.  
@@ -6,8 +6,8 @@ function [U, dataDirName, limits] = getSessionTable(theSubset)
 % unfiltered -- no selection criteria (except numStim > 0)
 % all -- standard selection criteria
 
-  dataDirName = '/Users/Shared/Data/OKernel/';
-  load([dataDirName ' Analysis/Mat Files/masterTable.mat'], 'T');
+  [~, analysisDirName, tableName] = whichData();
+  load([analysisDirName, tableName], 'T');
   limits = setLimits(theSubset);
   if isempty(limits)
     T = [];

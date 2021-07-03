@@ -27,8 +27,8 @@ preStim bins.
 %}
 
 % Get a list of files to examine
-  dataDirName = '/Users/Shared/Data/OKernel/';
-	tableDataName = [dataDirName ' Analysis/Processed Files.mat'];
+%   [~, analysisDirName] = whichData();
+% 	tableDataName = [analysisDirName 'Processed Files.mat'];
   limits.rampMS = 0;
   limits.criterion = 0;
   limits.animal = {'All'};
@@ -37,13 +37,13 @@ preStim bins.
   limits.oneDay = [];
   limits.minSessions = 0;
 % 	[U, ~] = getSubset('normal', dataDirName, tableDataName, limits);
-	[U, dataDirName] = getSessionTable('example');
+	[U, analysisDirName] = getSessionTable('example');
 
   for i = 1:height(U)
-    matFileName = dataDirName + U.animal(i) + '/MatFiles/' + U.date(i) + '.mat';
+    matFileName = analysisDirName + U.animal(i) + '/MatFiles/' + U.date(i) + '.mat';
     processFile(i, U, matFileName);
     fprintf('File %d of %d pHit %.2f, pFA %.2f, d'' %.2f\n', i, height(U), U.pHit(i), U.pFA(i), U.dPrime(i));
-    folderName = strcat(dataDirName, ' Analysis/Figures/D-Primes/') + U.animal(i);
+    folderName = strcat(analysisDirName, 'Figures/D-Primes/') + U.animal(i);
     if ~exist(folderName, 'dir')
        mkdir(folderName);
     end

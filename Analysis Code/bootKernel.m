@@ -38,8 +38,8 @@ function bootKernel
 
     % Get the bootstrap samples for the kernel(s)
 
-    dataDirName = '/Users/Shared/Data/OKernel/';
-    tableDataName = [dataDirName ' Analysis/Processed Files.mat'];
+    [~, analysisDirName] = whichData();
+    tableDataName = [analysisDirName 'Processed Files.mat'];
     limits.minSessions = 8;   % at least 8 sessions for each animal
     limits.criterion = 0.0;   % no kernel significance criterion
     limits.animal = 'All';    % all animals
@@ -48,12 +48,12 @@ function bootKernel
     limits.rampMS = 0;
     limits.stimStr = 'Steps';
     fprintf(sprintf('Processing %d bootstrap samples for %s rampMS %d\n', numBS, typeName, limits.rampMS));
-    convOneStim(dataDirName, tableDataName, limits, bootSTA, typeName, 3);
+    convOneStim(analysisDirName, tableDataName, limits, bootSTA, typeName, 3);
 
     limits.rampMS = 500;
     limits.stimStr = 'Ramps';
     fprintf(sprintf('Processing %d bootstrap samples for %s rampMS %d\n', numBS, typeName, limits.rampMS));
-    convOneStim(dataDirName, tableDataName, limits, bootSTA, typeName, 4);
+    convOneStim(analysisDirName, tableDataName, limits, bootSTA, typeName, 4);
 
     saveas(gcf, ['/Users/Shared/Data/OKernel/ Analysis/Figures/', 'BootConv ', typeName, limits.animal, '.pdf']);
     save(['STAs', typeName, 'Units'], 'unitSTA', 'CI50', 'CI05', 'CI95');

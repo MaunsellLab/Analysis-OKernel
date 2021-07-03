@@ -7,7 +7,7 @@ function preProcessAll
 %
 % The data set processed is selected using whichData.m. 
 
-  [dataDirName, tableName] = whichData();
+  [dataDirName, analysisDirName, tableName] = whichData();
   [varNames, varTypes] = tableNamesAndTypes();
   T = table('size', [0, length(varNames)], 'variableTypes', varTypes, 'variableNames', varNames);
   % count the number of sessions for online display
@@ -35,17 +35,17 @@ function preProcessAll
             T = [T; row];   %#ok<AGROW>
           end
           if ~isempty(stimProfiles)
-            if ~(isfolder([dataDirName, ' Analysis/Mat Files/Stim Profiles/']))
-              mkdir([dataDirName, ' Analysis/Mat Files/Stim Profiles/'])
+            if ~(isfolder([analysisDirName, 'Mat Files/Stim Profiles/']))
+              mkdir([analysisDirName, 'Mat Files/Stim Profiles/'])
             end
-            if ~(isfolder([dataDirName, ' Analysis/Mat Files/Stim Profiles/', animalNames{a}]))
-              mkdir([dataDirName, ' Analysis/Mat Files/Stim Profiles/', animalNames{a}])
+            if ~(isfolder([analysisDirName, 'Mat Files/Stim Profiles/', animalNames{a}]))
+              mkdir([analysisDirName, 'Mat Files/Stim Profiles/', animalNames{a}])
             end
-            save([dataDirName, ' Analysis/Mat Files/Stim Profiles/', animalNames{a}, '/', fileName], 'stimProfiles'); 
+            save([analysisDirName, 'Mat Files/Stim Profiles/', animalNames{a}, '/', fileName], 'stimProfiles'); 
           end
       end
   end
-  save([dataDirName, tableName], 'T'); 
+  save([analysisDirName, tableName], 'T'); 
 end
 
 %%
@@ -65,8 +65,8 @@ end
 %%
 function animalNames = getAnimalNames()
 
-    [dirName] = whichData();
-    dirStructs = dir(dirName);                              % data directory contents
+    [dataDirName] = whichData();
+    dirStructs = dir(dataDirName);                              % data directory contents
     animalNames = {dirStructs(:).name};                       % data directory file names
     numFiles = length(animalNames);
     validFiles = false(1, numFiles);                        % find only files with number names (animals)
