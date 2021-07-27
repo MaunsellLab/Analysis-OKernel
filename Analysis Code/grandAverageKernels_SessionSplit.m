@@ -13,30 +13,81 @@ function grandAverageKernels_SessionSplit
   end
   stimProfiles = getOptoProfiles(U);
   
-  % Num Trials to Split On
-  nHits = floor(size(stimProfiles.hitProfiles,1)/2);
-  nMiss = floor(size(stimProfiles.missProfiles,1)/2);
-  nFA = floor(size(stimProfiles.earlyProfiles,1)/2);
+  % Grab the outcomes from each session, will use to split sessions in half
+  nSessions = size(U,1);
+  nHits = U.stimCorrects;
+  nMiss = U.stimFails;
+  nFA = U.stimEarlies;
 
-   % Split stimProfiles by half
+  % Kernel Profiles from 1st half of sessions
+  profiles1.hitProfiles = [];
+  profiles1.missProfiles = [];
+  profiles1.earlyProfiles = [];
+  profiles1.RTProfiles = [];
+  profiles1.stimRTProfiles = [];
+  
+  % Kernel Profiles from 2nd half of sessions
+  profiles2.hitProfiles = [];
+  profiles2.missProfiles = [];
+  profiles2.earlyProfiles = [];
+  profiles2.RTProfiles = [];
+  profiles2.stimRTProfiles = [];
+  
+  hitCounter = 1;
+  missCounter = 1;
+  faCounter = 1;
+  
+  for i = 1:nSessions
+
+      % Hits
+      profiles1.hitProfiles = [profiles1.hitProfiles;...
+          stimProfiles.hitProfiles(hitCounter:hitCounter+floor(nHits(i)/2),:)];
+      
+      profiles2.hitProfiles = [profiles2.hitProfiles;...
+          stimProfiles.hitProfiles(hitCounter+floor(nHits(i)/2)+1:hitCounter+floor(nHits(i))-1,:)];
+      
+      % Aligned to RT
+      profiles1.RTProfiles = [profiles1.RTProfiles;...
+          stimProfiles.RTProfiles(hitCounter:hitCounter+floor(nHits(i)/2),:)];
+      
+      profiles2.RTProfiles = [profiles2.RTProfiles;...
+          stimProfiles.RTProfiles(hitCounter+floor(nHits(i)/2)+1:hitCounter+floor(nHits(i))-1,:)];
+      
+      % Aligned to Stim-RT
+      profiles1.stimRTProfiles = [profiles1.stimRTProfiles;...
+          stimProfiles.stimRTProfiles(hitCounter:hitCounter+floor(nHits(i)/2),:)];
+      
+      profiles2.stimRTProfiles = [profiles2.stimRTProfiles;...
+          stimProfiles.stimRTProfiles(hitCounter+floor(nHits(i)/2)+1:hitCounter+floor(nHits(i))-1,:)];
+      
+      hitCounter = hitCounter + nHits(i);
+      
+      % Misses
+      profiles1.missProfiles = [profiles1.missProfiles;...
+          stimProfiles.missProfiles(missCounter:missCounter+floor(nMiss(i)/2),:)];
+          
+      profiles2.missProfiles = [profiles2.missProfiles;...
+          stimProfiles.missProfiles(missCounter+floor(nMiss(i)/2)+1:missCounter+floor(nMiss(i))-1,:)];
+
+      missCounter = missCounter + nMiss(i);
+  
+      % FA
+      profiles1.earlyProfiles = [profiles1.earlyProfiles;...
+          stimProfiles.earlyProfiles(faCounter:faCounter+floor(nFA(i)/2),:)];
+      
+      profiles2.earlyProfiles = [profiles2.earlyProfiles;...
+          stimProfiles.earlyProfiles(faCounter+floor(nFA(i)/2)+1:faCounter+floor(nFA(i))-1,:)];
+      
+      faCounter = faCounter + nFA(i);
+  end
+  
+ 
   for i = 1:2
       if i == 1
-          profiles.hitProfiles = stimProfiles.hitProfiles(1:nHits,:);
-          profiles.missProfiles = stimProfiles.missProfiles(1:nMiss,:);
-          profiles.earlyProfiles = stimProfiles.earlyProfiles(1:nFA,:);
-          profiles.RTProfiles = stimProfiles.RTProfiles(1:nHits,:);
-          profiles.stimRTProfiles = stimProfiles.stimRTProfiles(1:nHits,:);
-          
-          plotKernelPage(U, limits, profiles);
+          plotKernelPage(U, limits, profiles1);
           saveas(gcf, sprintf('%sFigures/Kernels/%s.pdf', analysisDirName, limits.half{i}));
       else
-          profiles.hitProfiles = stimProfiles.hitProfiles(nHits+1:end,:);
-          profiles.missProfiles = stimProfiles.missProfiles(nMiss+1:end,:);
-          profiles.earlyProfiles = stimProfiles.earlyProfiles(nFA+1:end,:);
-          profiles.RTProfiles = stimProfiles.RTProfiles(nHits+1:end,:);
-          profiles.stimRTProfiles = stimProfiles.stimRTProfiles(nHits+1:end,:);
-          
-          plotKernelPage(U, limits, profiles);
+          plotKernelPage(U, limits, profiles2);
           saveas(gcf, sprintf('%sFigures/Kernels/%s.pdf', analysisDirName, limits.half{i})); 
           
       end
