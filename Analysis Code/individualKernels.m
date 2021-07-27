@@ -18,7 +18,7 @@ function individualKernels
     end
     stimProfiles = getOptoProfiles(U);
     plotKernelPage(U, limits, stimProfiles);
-    saveas(gcf, sprintf('%sFigures/Kernels/Ramp %d %s.pdf', analysisDataDir, limits.rampMS, limits.animal));
+    saveas(gcf, sprintf('%sFigures/Kernels/%d %s.pdf', analysisDataDir, limits.rampMS, limits.animal));
   end
   % This isn't plotting anything right now, eventually when we have many
   % mice we will want to plot all the kernels on the same axes.
