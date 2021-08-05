@@ -2,6 +2,7 @@ function individualKernels
 % Plot all the kernels for the grand average across selected sessions, once for steps and once for ramps
 
   rampMS = 0;
+  %animals = {'1458', '1462', '1463', '1548'};
   animals = {'1462', '1463'};
   
   [~, analysisDataDir, tableName] = whichData();
@@ -9,12 +10,13 @@ function individualKernels
   
   limits = setLimits('All');
   limits.rampMS = rampMS;
+  
   for a = 1:length(animals)
     limits.aniNum = a;
     limits.animal = animals{a};
     U = selectUsingLimits(T, limits);
     if height(U) == 0
-      continue;
+      continue
     end
     stimProfiles = getOptoProfiles(U);
     plotKernelPage(U, limits, stimProfiles);

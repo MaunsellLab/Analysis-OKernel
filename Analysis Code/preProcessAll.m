@@ -1,4 +1,5 @@
-function preProcessAll
+function preProcessAll(testedContrastPC)
+
 % Preprocess SCernel data for analysis.  This should be run whenever key analysis features are changed
 % Starting from scratch, prepare all data files for analysis.  We scan through every file doing the following:
 %  1) Find the response window to use, and assign trials to hits, misses, earlies
@@ -30,7 +31,7 @@ function preProcessAll
           if length(fileName) > 10
              continue; 
           end
-          [row, stimProfiles] = doOneFile(dataDirName, animalNames{a}, fileName);
+          [row, stimProfiles] = doOneFile(dataDirName, animalNames{a}, fileName, testedContrastPC);
           if ~isempty(row)
             T = [T; row];   %#ok<AGROW>
           end
@@ -49,7 +50,7 @@ function preProcessAll
 end
 
 %%
-function [row, stimProfiles] = doOneFile(dataDirName, animalName, fileName)
+function [row, stimProfiles] = doOneFile(dataDirName, animalName, fileName, testedContrastPC)
 %
   load([dataDirName animalName '/MatFiles/' fileName]); %#ok<LOAD>
   if ~exist('trials', 'var') || ~isfield(trials, 'trial') || ~(str2double(animalName) == file.subjectNumber) %#ok<NODEF>
@@ -58,8 +59,8 @@ function [row, stimProfiles] = doOneFile(dataDirName, animalName, fileName)
     return;
   end
 	trials = validateTrials(trials);                          % check trialEnds, etc.
-  row = initializeRow(animalName, fileName, trials(1).trial.visualRampDurMS);
-	[row, stimProfiles] = getKernels(file, trials, row);      % compile the kernels for this file
+  row = initializeRow(animalName, fileName, trials(1).trial.visualRampDurMS, testedContrastPC);
+	[row, stimProfiles] = getKernels(file, trials, row, testedContrastPC);      % compile the kernels for this file
 end
 
 %%
@@ -99,7 +100,7 @@ function fileNames = getFileNames(animalName)
 end
 
 %%
-function [row, stimProfiles] = getKernels(file, trials, row)
+function [row, stimProfiles] = getKernels(file, trials, row, testedContrastPC)
 %
 % Compute kernels for one session
 %
@@ -118,7 +119,7 @@ function [row, stimProfiles] = getKernels(file, trials, row)
   
   % we only consider the range between the first and last stimulated trials
   firstStimIndex = find(stimIndices > 0, 1);                 	% first stimulated trial
-	lastStimIndex = find(stimIndices > 0, 1, 'last');          	% last stimulated trial
+  lastStimIndex = find(stimIndices > 0, 1, 'last');          	% last stimulated trial
   trials = trials(firstStimIndex:lastStimIndex);
   trialStructs = trialStructs(firstStimIndex:lastStimIndex);
   stimIndices = stimIndices(firstStimIndex:lastStimIndex);
@@ -136,7 +137,7 @@ function [row, stimProfiles] = getKernels(file, trials, row)
     
   % Get Visual Stimulus Levels to subset data by top-up versus low (tested) contrast
   contrasts = [trialStructs(:).visualStimValue];
-  testContIdx = contrasts == min(contrasts); % We currently test the min contrast presented
+  testContIdx = contrasts == testedContrastPC; % Input for Tested contrast
   topUpContIdx = contrasts == max(contrasts); % We present high contrasts just to keep em happy
   
   % find the response interval and get a modified set of indices that limits hits to only that interval
@@ -288,13 +289,13 @@ function [row, stimProfiles] = getKernels(file, trials, row)
 end
 
 %%
-function row = initializeRow(animalName, fileName, rampMS)
+function row = initializeRow(animalName, fileName, rampMS, testedContrastPC)
 %
   [varNames, varTypes] = tableNamesAndTypes();
   row = table('size', [1, length(varNames)], 'variableTypes', varTypes, 'variableNames', varNames);
   row.animal = animalName;
   row.date = fileName;
-	row.rampMS = rampMS;
+  row.rampMS = rampMS;
   row.meanPowerMW = 0.0;
   row.maxPowerMW = 0.0;
   row.RTWindowMS = 0.0;
@@ -303,6 +304,7 @@ function row = initializeRow(animalName, fileName, rampMS)
   row.topUpFails = 0;
   row.topUpEarlies = 0;
   row.numStim = 0;
+  row.testContrastPC = testedContrastPC;
   row.stimCorrects = 0;
   row.stimFails = 0;
   row.stimEarlies = 0;
@@ -354,7 +356,7 @@ function [names, types] = tableNamesAndTypes()
 %
   names = {'animal', 'date', 'rampMS', 'meanPowerMW', 'maxPowerMW', 'RTWindowMS', ...
     'numTopUp', 'topUpCorrects', 'topUpFails', 'topUpEarlies', ...
-    'numStim', 'stimCorrects', 'stimFails', 'stimEarlies', ...
+    'numStim', 'testContrastPC', 'stimCorrects', 'stimFails', 'stimEarlies', ...
     'numNoStim', 'noStimCorrects', 'noStimFails', 'noStimEarlies', ...
     'pFA', 'topUpPHit', 'topUpDPrime', 'topUpC', ...
     'stimPHit', 'stimPFA', 'stimDPrime', 'stimC', 'noStimPHit', 'noStimPFA', 'noStimDPrime', 'noStimC', ...
@@ -363,7 +365,7 @@ function [names, types] = tableNamesAndTypes()
     'topUpCorrectRTs', 'stimCorrectRTs','noStimCorrectRTs' 'topUpEarlyRTs', 'stimEarlyRTs', 'noStimEarlyRTs', 'failRTs'};
   types = {'string', 'string', 'uint32', 'double', 'double', 'double', ...
     'uint32', 'uint32', 'uint32', 'uint32', ...
-    'uint32', 'uint32', 'uint32', 'uint32', ...
+    'uint32', 'uint32', 'uint32', 'uint32', 'uint32', ...
     'uint32', 'uint32', 'uint32', 'uint32', ...
     'double', 'double',  'double', 'double', ...
     'double', 'double', 'double',  'double', 'double', 'double', 'double',  'double', ...
