@@ -1,12 +1,12 @@
 function limits = setLimits(theSubset)
   % Set up the default selection criteria
-  limits.minSessions = 3;                	% require at least n sessions for each animal
+  limits.minSessions = 1;                	% require at least n sessions for each animal
   limits.minTrials = 0;
   limits.criterion = 0;
   limits.minDec = -1;
   limits.minDPrime = -1;
-  limits.minAvgDeltaDPrime = 0.1; % Use this to control stringency for data selection
-  limits.minSessionDeltaDPrime = 0.1; % Single Session Delta d-prime must exceed this for inclusion 
+  limits.minAvgDeltaDPrime = 0.0; % Use this to control stringency for data selection
+  limits.minSessionDeltaDPrime = 0.0; % Single Session Delta d-prime must exceed this for inclusion 
   limits.maxMeanPowerMW = 0.5;
   limits.animal = {'All'};
   limits.oneDay = [];
@@ -33,7 +33,7 @@ function limits = setLimits(theSubset)
       limits.oneDay = '2019-10-10';
     case {'OneOff', 'oneoff', 'oneOff'}
       limits.rampMS = 0;
-      limits.animal = {'1462', '1463'};
+      limits.animal = {'1462', '1463', '1548'};
     otherwise
       fprintf('getSessionTable: unrecognized table type ''%s''\n', theSubset);
       limits = [];
