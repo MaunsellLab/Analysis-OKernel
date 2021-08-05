@@ -24,7 +24,9 @@ function [respLimitsMS, newIndices, fitCum, endCumTimeMS, fitStats, respLimitCIM
   % Set the time limits, and clip off the early and late RTs, keeping track of their numbers
   endCumTimeMS = 2000;
   startTime = -file.preStimMinMS;
-  endTime = min(file.responseLimitMS, endCumTimeMS);
+  % Note this was changed by JJC
+  % endTime = min(file.responseLimitMS, endCumTimeMS); 
+  endTime = min(file.reactMS, endCumTimeMS);
 
   % make a cumulative distribution, using the early and late numbers to set the start and end points
   numTotal = length(allRTs);
