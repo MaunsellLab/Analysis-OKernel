@@ -1,9 +1,11 @@
-function individualKernels
+function individualKernels(brainArea)
 % Plot all the kernels for the grand average across selected sessions, once for steps and once for ramps
 
+  % brainArea input is a string:
+  % 'SC' for superior colliculus
+  % 'V1' for visual cortex
+
   rampMS = 0;
-  %animals = {'1458', '1462', '1463', '1548'};
-  animals = {'1462', '1463'};
   
   [~, analysisDataDir, tableName] = whichData();
   load([analysisDataDir tableName], 'T');
@@ -11,6 +13,13 @@ function individualKernels
   limits = setLimits('All');
   limits.rampMS = rampMS;
   
+  if strcmp(brainArea,'SC')
+      animals = {'1458', '1548'};
+  elseif strcmp(brainArea,'V1')
+      animals = {'1462', '1463'};
+  end
+  
+ 
   for a = 1:length(animals)
     limits.aniNum = a;
     limits.animal = animals{a};
