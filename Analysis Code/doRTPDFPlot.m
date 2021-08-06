@@ -4,7 +4,7 @@
     cla;
     cdfplot([correctRTs wrongRTs missRTs]);
 %     timeLimit = min(file.responseLimitMS, 5000);
-    timeLimit = 1000;
+    timeLimit = 750;
     set(gca, 'XLim', [-500 timeLimit], 'YLim', [0 1]);
     hold on;
     yLimits = get(gca, 'YLim');
