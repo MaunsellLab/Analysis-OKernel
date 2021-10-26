@@ -14,7 +14,7 @@ function individualKernels(brainArea)
   limits.rampMS = rampMS;
   
   if strcmp(brainArea,'SC')
-      animals = {'1458', '1520', '1548'};
+      animals = {'1458', '1548', '1634', '1667', '1675'};
   elseif strcmp(brainArea,'V1')
       animals = {'1462', '1463'};
   end

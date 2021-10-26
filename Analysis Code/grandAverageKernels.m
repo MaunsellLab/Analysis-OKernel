@@ -12,7 +12,7 @@ function grandAverageKernels(brainArea)
   
   
   if strcmp(brainArea,'SC')
-      limits.animal = {'1458', '1520', '1548'};
+      limits.animal = {'1458', '1548', '1634', '1667', '1675'};
   elseif strcmp(brainArea,'V1')
       limits.animal = {'1462', '1463'};
   end
