@@ -37,17 +37,19 @@ dPrimes=cell(nMice,2);
 deltaDPrime = cell(nMice,1);
 mice = [U.animal];
 sessionCounts = zeros(nMice,1);
-
+catDPrimes = [];
 
 
 for mouseNum = 1:nMice
     mouseIdx=strcmp(limits.animal{1,mouseNum},mice);
     dPrimes{mouseNum,1} = [U.noStimDPrime(mouseIdx)];
     dPrimes{mouseNum,2} = [U.stimDPrime(mouseIdx)];
+    catDPrimes = [catDPrimes; [U.noStimDPrime(mouseIdx), U.stimDPrime(mouseIdx)]]; 
     deltaDPrime{mouseNum,1} = [U.stimDPrime(mouseIdx)] - [U.noStimDPrime(mouseIdx)];
     sessionCounts(mouseNum) = length(deltaDPrime{mouseNum,1});
 end
 
+[~,totalDPrime_P] = ttest(catDPrimes(:,1), catDPrimes(:,2));
 
 %%%%%%%%% Plot scatter plot of d-primes from each session (stim v unstim)
 % Set Axes Limits
@@ -68,7 +70,7 @@ end
 xlim([minAxes maxAxes]);
 xlabel('Unstimulated d-prime');
 ylim([minAxes maxAxes]);
-xlabel('Stimulated d-prime');
+ylabel('Stimulated d-prime');
 plot([minAxes maxAxes],[minAxes maxAxes], 'LineStyle', '--', 'Color', 'k', 'LineWidth', 0.5);
 title('d-prime');
 set(gca, 'FontSize',14);
