@@ -9,12 +9,17 @@ function grandAverageKernels(brainArea)
   load([analysisDirName, tableName], 'T');
   limits = setLimits('All');
   limits.rampMS = 0;
-  
-  
+ 
   if strcmp(brainArea,'SC')
-      limits.animal = {'1458', '1548', '1634', '1667', '1675'};
+      % Full Kernel For Aligned Luminance Patch
+      % limits.animal = {'1458', '1548', '1674', '1675', '1902', '1905'};
+      % VGATs
+      limits.animal = {'2057', '2058'};
+      
+      % Control Kernel For Offset Luminance Patch
+      % limits.animal = {'1674', '1675', '1902'};
   elseif strcmp(brainArea,'V1')
-      limits.animal = {'1462', '1463'};
+      limits.animal = {'1952', '1956', '1957'};
   end
   
   

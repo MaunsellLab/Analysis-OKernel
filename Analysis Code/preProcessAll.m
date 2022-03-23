@@ -136,7 +136,7 @@ function [row, stimProfiles] = getKernels(file, trials, row, testedContrastPC)
   end
     
   % Get Visual Stimulus Levels to subset data by top-up versus low (tested) contrast
-  contrasts = [trialStructs(:).visualStimValue];
+  contrasts = round([trialStructs(:).visualStimValue],2);
   testContIdx = contrasts == testedContrastPC; % Input for Tested contrast
   topUpContIdx = contrasts == max(contrasts); % We present high contrasts just to keep em happy
   
