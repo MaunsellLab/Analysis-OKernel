@@ -15,8 +15,8 @@ function individualKernels(brainArea)
   
   if strcmp(brainArea,'SC')
       % Full Kernel For Aligned Luminance Patch
-      animals = {'1458', '1548', '1634',  '1674', '1675', '1902', '1905'};
-      % animals = {'2054','2057', '2058',  '2060', '2061', '2063'};
+      % animals = {'1458', '1548', '1634',  '1674', '1675', '1902', '1905'};
+      animals = {'2054','2057', '2058',  '2060', '2061', '2063'};
       % Control Kernel For Offset Luminance Patch
       % animals = {'1674', '1675', '1902'};
       
@@ -25,7 +25,7 @@ function individualKernels(brainArea)
       % animals = {'2054', '2058', '2060', '2063'};
       
   elseif strcmp(brainArea,'V1')
-      animals = {'1951', '1952', '1956', '1957', '1958', '1960', '1995', '1996', '1998', '2018'};
+      animals = {'1951', '1952', '1956', '1958', '1960', '1995', '1996', '1998', '2015', '2016', '2018', '2080'};
       % animals = {'1958', '1960', '1995', '1998'};
   end
   

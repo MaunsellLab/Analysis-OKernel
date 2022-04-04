@@ -56,13 +56,20 @@ function [respLimitsMS, newIndices, fitCum, endCumTimeMS, fitStats, respLimitCIM
 
   newIndices.correct = trialEnds == 0 & RTs >= respLimitsMS(1) & RTs < respLimitsMS(2);
   newIndices.early = (trialEnds == 1 | trialEnds == 0) & RTs < respLimitsMS(1);
-  newIndices.fail = (trialEnds == 2 | trialEnds == 0) & RTs >= respLimitsMS(2);
+  newIndices.fail = (trialEnds == 2);
+  %newIndices.fail = (trialEnds == 2 | trialEnds == 0) & RTs >= respLimitsMS(2);
+
 end
 
 function [respLimitsMS, fitStats, fitCum] = respLimits(RTs, file, numEarly, numTotal, startTime, endTime)
 
-  upperLimit = 0.975;   % upper point on cumulative hit function, ending response window
-  lowerLimit = 0.025;   % lower point on cumulative hit function, starting response window
+  keepPCEarlyResp = 0.02;   % lower retention bound on cumulative hit function, 
+  % starts response window, percentage of responses before this are set to False Alarms
+  
+  dropPCLateResp = 0.03;   % upper retention on cumulative hit function, 
+  % ends response window, percentage of responses after this are not considered hits
+  % or misses
+
   RTDist = zeros(1, endTime - startTime);
   for i = 1:length(RTs)
     bin = RTs(i) - startTime + 1;
@@ -87,5 +94,7 @@ function [respLimitsMS, fitStats, fitCum] = respLimits(RTs, file, numEarly, numT
   [fitResult, fitStats] = fit(xData', deSloped', ft, opts); 
   fitCum = (fitResult.c + (fitResult.b - fitResult.c) ./ (1 + (xData ./ fitResult.a).^fitResult.d)) + ...
       xData * b(1) + b(2);
-  respLimitsMS = fitResult.a .* exp(log(1 ./ [upperLimit, lowerLimit] - 1) ./ fitResult.d) + startTime;
+  %respLimitsMS = fitResult.a .* exp(log(1 ./ [keepPercent, dropPercent] - 1) ./ fitResult.d) + startTime;
+  respLimitsMS = fitResult.a .* exp(log(1 ./ [(1-keepPCEarlyResp), dropPCLateResp] - 1) ./ fitResult.d) + startTime;
+
 end
