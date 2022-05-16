@@ -57,7 +57,7 @@ function [respLimitsMS, newIndices, fitCum, endCumTimeMS, fitStats, respLimitCIM
   newIndices.correct = trialEnds == 0 & RTs >= respLimitsMS(1) & RTs < respLimitsMS(2);
   newIndices.early = (trialEnds == 1 | trialEnds == 0) & RTs < respLimitsMS(1);
   newIndices.fail = (trialEnds == 2);
-  %newIndices.fail = (trialEnds == 2 | trialEnds == 0) & RTs >= respLimitsMS(2);
+
 
 end
 
@@ -66,8 +66,8 @@ function [respLimitsMS, fitStats, fitCum] = respLimits(RTs, file, numEarly, numT
   keepPCEarlyResp = 0.02;   % lower retention bound on cumulative hit function, 
   % starts response window, percentage of responses before this are set to False Alarms
   
-  dropPCLateResp = 0.03;   % upper retention on cumulative hit function, 
-  % ends response window, percentage of responses after this are not considered hits
+  dropPCLateResp = 0.08;   % upper retention on cumulative hit function, 
+  % ends response window,  responses after 1-dropPCLateResp are not considered hits
   % or misses
 
   RTDist = zeros(1, endTime - startTime);

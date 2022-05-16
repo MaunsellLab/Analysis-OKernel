@@ -8,7 +8,7 @@ if contains(computerName(), 'maunsell')
 	dataDirName = '../../../Data/OKernel/';
 	analysisDirName = '../../Analysis-OKernel/';
 else
-	dataDirName = '/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/BehavData/V1 Gabor/';
+	dataDirName = '/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/BehavData/SC Lum/';
 	analysisDirName = '../../Analysis-OKernel/';
 end
 

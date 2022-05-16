@@ -14,7 +14,7 @@ function grandAverageKernels(brainArea)
       % Full Kernel For Aligned Luminance Patch
       limits.animal = {'1458', '1548', '1674', '1675', '1902', '1905'};
       % VGATs
-      %limits.animal = {'2057', '2058',  '2060', '2063'};
+      %limits.animal = {'2057', '2058', '2063'};
       
       % Control Kernel For Offset Luminance Patch
       % limits.animal = {'1674', '1675', '1902'};
