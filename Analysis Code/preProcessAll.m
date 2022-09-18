@@ -1,4 +1,4 @@
-function preProcessAll(testedContrastPC)
+function preProcessAll(testedContrastPC, condition)
 
 % Preprocess SCernel data for analysis.  This should be run whenever key analysis features are changed
 % Starting from scratch, prepare all data files for analysis.  We scan through every file doing the following:
@@ -7,22 +7,31 @@ function preProcessAll(testedContrastPC)
 %  3) Make the stim profiles that are needed for bootstrapping kernels
 %
 % The data set processed is selected using whichData.m. 
+% Condition input specifies which dataset you want to crunch
+% possible inputs:
+% SC Gabor'
+% 'SC Lum'
+% 'SC Offset'
+% 'V1 Gabor'
+% 'V1 Lum'
+% 'V1 Offset'
 
-  [dataDirName, analysisDirName, tableName] = whichData();
+
+  [dataDirName, analysisDirName, tableName] = whichData(condition);
   [varNames, varTypes] = tableNamesAndTypes();
   T = table('size', [0, length(varNames)], 'variableTypes', varTypes, 'variableNames', varNames);
   % count the number of sessions for online display
-  animalNames = getAnimalNames();
+  animalNames = getAnimalNames(condition);
   numAnimals = length(animalNames);
   numSessions = 0;
   for a = 1:numAnimals
-      fileNames = getFileNames(animalNames{a});
+      fileNames = getFileNames(condition, animalNames{a});
       numSessions = numSessions + length(fileNames);
   end
   % compile each session
   session = 1;
   for a = 1:numAnimals
-      fileNames = getFileNames(animalNames{a});
+      fileNames = getFileNames(condition, animalNames{a});
       numFiles = length(fileNames);
       for f = 1:numFiles                                  	% for each file
           [~, fileName, ~] = fileparts(fileNames{f});      	% get file name
@@ -64,9 +73,9 @@ function [row, stimProfiles] = doOneFile(dataDirName, animalName, fileName, test
 end
 
 %%
-function animalNames = getAnimalNames()
+function animalNames = getAnimalNames(condition)
 
-    [dataDirName] = whichData();
+    [dataDirName] = whichData(condition);
     dirStructs = dir(dataDirName);                              % data directory contents
     animalNames = {dirStructs(:).name};                       % data directory file names
     numFiles = length(animalNames);
@@ -84,9 +93,9 @@ function animalNames = getAnimalNames()
 end
 
 %%
-function fileNames = getFileNames(animalName)
+function fileNames = getFileNames(condition, animalName)
 
-    dataDirName = whichData();
+    dataDirName = whichData(condition);
     dirStructs = dir([dataDirName animalName '/MatFiles/']);	% data directory contents
     fileNames = {dirStructs(:).name};                             % data directory file names
     numFiles = length(fileNames);

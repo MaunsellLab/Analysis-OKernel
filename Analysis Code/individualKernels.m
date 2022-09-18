@@ -12,12 +12,13 @@ function individualKernels(brainArea, stimType)
   
   % if not, throw errors
   assert(ischar(brainArea),'brainArea must be text: SC or V1');
-  assert(ischar(stimType),'stimType must be text: Lum, or Gab or Off');
-  
+  assert(ischar(stimType),'stimType must be text: Lum, or Gab or Offset');
+ 
   
   rampMS = 0;
   
-  [~, analysisDataDir, tableName] = whichData();
+  condition = [brainArea ' ' stimType];
+  [~, analysisDataDir, tableName] = whichData(condition);
   load([analysisDataDir tableName], 'T');
   
   limits = setLimits('All');
@@ -28,11 +29,11 @@ function individualKernels(brainArea, stimType)
       if strcmp(stimType,'Lum')
           % Full Kernel For Aligned Luminance Patch
           animals = {'1458', '1548', '1674', '1675', '1902', '2057', '2058', '2063', '2169', '2236'};
-          % animals = {'2169', '2236'};
-      elseif strcmp(stimType,'Gab')
+          % animals = {'2063'};
+      elseif strcmp(stimType,'Gabor')
           % Full Kernel For Aligned Gabor Patch
           animals = {'1548', '1674', '2057', '2058', '2063', '2169'};
-      elseif strcmp(stimType, 'Off')
+      elseif strcmp(stimType, 'Offset')
           % Control Kernel For Offset Luminance Patch
           animals = {'1674', '1675', '1902', '2057', '2063', '2236'};
           % animals = {'2057', '2063', '2236'};
@@ -44,13 +45,13 @@ function individualKernels(brainArea, stimType)
       
       if strcmp(stimType,'Lum')
           % V1 Luminance
-          animals = {'1960','2015','2083','2126'};
-      elseif strcmp(stimType,'Gab')
+          animals = {'1960', '2015', '2083', '2126', '2220', '2221'};
+      elseif strcmp(stimType,'Gabor')
           % V1 Gabor
-          animals = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};
-      elseif strcmp(stimType,'Off')
+          animals = {'1960', '2015', '2016', '2083', '2126', '2206', '2207', '2209', '2220', '2221', '2247'};
+      elseif strcmp(stimType,'Offset')
           % V1 Offset
-          animals = {'2016','2083', '2126', '2220'};
+          animals = {'2016', '2083', '2126', '2220'};
           
       end
   end
