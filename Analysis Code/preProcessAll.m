@@ -9,13 +9,14 @@ function preProcessAll(testedContrastPC, condition)
 % The data set processed is selected using whichData.m. 
 % Condition input specifies which dataset you want to crunch
 % possible inputs:
-% SC Gabor'
+% 'SC Gabor'
 % 'SC Lum'
 % 'SC Offset'
+% 'SC FA'
 % 'V1 Gabor'
 % 'V1 Lum'
 % 'V1 Offset'
-
+% 'V1 FA'
 
   [dataDirName, analysisDirName, tableName] = whichData(condition);
   [varNames, varTypes] = tableNamesAndTypes();

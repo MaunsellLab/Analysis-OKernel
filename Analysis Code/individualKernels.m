@@ -7,12 +7,13 @@ function individualKernels(brainArea, stimType)
 
   % stimType input is also a string:
   % 'Lum' for luminance patch
-  % 'Gab' for Gabor patch
+  % 'Gabor' for Gabor patch
   % 'Off' for Offset Control (misaligned)
+  % 'FA' for combined Gabor/Lum to look at impact on motor
   
   % if not, throw errors
   assert(ischar(brainArea),'brainArea must be text: SC or V1');
-  assert(ischar(stimType),'stimType must be text: Lum, or Gab or Offset');
+  assert(ischar(stimType),'stimType must be text: Lum, or Gabor or Offset or FA');
  
   
   rampMS = 0;
@@ -37,7 +38,9 @@ function individualKernels(brainArea, stimType)
           % Control Kernel For Offset Luminance Patch
           animals = {'1674', '1675', '1902', '2057', '2063', '2236'};
           % animals = {'2057', '2063', '2236'};
-          
+      elseif strcmp(stimType, 'FA')
+          % Control Kernel For Motor Impact (combined across visual stimuli)
+          animals = {'1458', '1548', '1674', '1675', '1902', '2057', '2058', '2063', '2169', '2236'};
       end
       
       
@@ -48,11 +51,13 @@ function individualKernels(brainArea, stimType)
           animals = {'1960', '2015', '2083', '2126', '2220', '2221'};
       elseif strcmp(stimType,'Gabor')
           % V1 Gabor
-          animals = {'1960', '2015', '2016', '2083', '2126', '2206', '2207', '2209', '2220', '2221', '2247'};
+          animals = {'1960', '2015', '2016', '2083', '2126', '2206', '2207', '2220', '2221', '2247'};
       elseif strcmp(stimType,'Offset')
           % V1 Offset
           animals = {'2016', '2083', '2126', '2220'};
-          
+      elseif strcmp(stimType, 'FA')
+          % Control Kernel For Motor Impact (Combined Across Stimuli)
+          animals = {'1960', '2015', '2016', '2083', '2126', '2206', '2207', '2220', '2221', '2247'};
       end
   end
   
