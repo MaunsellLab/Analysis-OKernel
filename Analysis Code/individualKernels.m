@@ -15,9 +15,6 @@ function individualKernels(brainArea, stimType)
 assert(ischar(brainArea),'brainArea must be text: SC or V1');
 assert(ischar(stimType),'stimType must be text: Lum, or Gabor or Offset or FA');
 
-
-rampMS = 0;
-
 condition = [brainArea ' ' stimType];
 [~, analysisDataDir, tableName] = whichData(condition);
 
@@ -27,9 +24,10 @@ else
     load([analysisDirName, condition, tableName], 'T');
 end
 
-
 limits = setLimits('All');
+rampMS = 0;
 limits.rampMS = rampMS;
+
 
 if strcmp(brainArea,'SC')
 
