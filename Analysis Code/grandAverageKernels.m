@@ -13,12 +13,18 @@ function grandAverageKernels(brainArea, stimType)
 % if not, throw errors
 assert(ischar(brainArea),'brainArea must be text: SC or V1');
 assert(ischar(stimType),'stimType must be text: Lum, or Gabor or Offset');
- 
-  condition = [brainArea ' ' stimType];
-  [~, analysisDirName, tableName] = whichData(condition);
-  load([analysisDirName, tableName], 'T');
-  limits = setLimits('All');
-  limits.rampMS = 0;
+
+condition = [brainArea ' ' stimType];
+[~, analysisDirName, tableName] = whichData(condition);
+
+if contains(computerName(), 'maunsell')
+    load([analysisDirName, tableName], 'T');
+else
+    load([analysisDirName, condition, tableName], 'T');
+end
+
+limits = setLimits('All');
+limits.rampMS = 0;
  
   if strcmp(brainArea,'SC')
       if strcmp(stimType,'Lum')
@@ -42,12 +48,12 @@ assert(ischar(stimType),'stimType must be text: Lum, or Gabor or Offset');
           limits.animal = {'1960', '2015', '2083', '2126', '2220', '2221'};
       elseif strcmp(stimType,'Gabor')
           % V1 Gabor
-          % limits.animal = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};
+          limits.animal = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};
           % V1 Gabor Who Also Have Luminance Data
-          limits.animal = {'1960', '2015', '2083', '2126', '2220', '2221'};
+          % limits.animal = {'1960', '2015', '2083', '2126', '2220', '2221'};
       elseif strcmp(stimType,'Offset')
           % V1 Offset
-          limits.animal = {'2016','2083', '2126', '2220'};
+          limits.animal = {'2016','2083', '2126', '2220', '2221'};
       elseif strcmp(stimType, 'FA')
           % Control Kernel for Motor Impact (Combines Luminance and Gabor)
           limits.animal = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};

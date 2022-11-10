@@ -9,12 +9,14 @@ function [dataDirName, analysisDirName, tableName] = whichData(condition)
 % 'V1 Lum'
 % 'V1 Offset'
 
-tableName = sprintf('Mat Files/masterTable.mat');
 if contains(computerName(), 'maunsell')
 	dataDirName = '../../../Data/OKernel/';
 	analysisDirName = '../../Analysis-OKernel/';
+    tableName = sprintf('Mat Files/masterTable.mat');
 else    
 	dataDirName = ['/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/BehavData/' condition '/'];
-	analysisDirName = '../../Analysis-OKernel/';
+	%analysisDirName = '../../Analysis-OKernel/';
+    analysisDirName = '/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/MasterFiles/';
+    tableName = sprintf('/masterTable.mat');
 end
 
