@@ -13,7 +13,7 @@ function individualKernels(brainArea, stimType)
 
 % if not, throw errors
 assert(ischar(brainArea),'brainArea must be text: SC or V1');
-assert(ischar(stimType),'stimType must be text: Lum, or Gabor or Offset or FA');
+assert(ischar(stimType),'stimType must be text: Lum, Gabor, Offset or FA');
 
 condition = [brainArea ' ' stimType];
 [~, analysisDataDir, tableName] = whichData(condition);
@@ -73,7 +73,7 @@ for a = 1:length(animals)
     if height(U) == 0
         continue
     end
-    stimProfiles = getOptoProfiles(U);
+    stimProfiles = getOptoProfiles(U, condition);
     plotKernelPage(U, limits, stimProfiles);
     saveas(gcf, sprintf('%sFigures/Kernels/%d %s.pdf', analysisDataDir, limits.rampMS, limits.animal));
 end

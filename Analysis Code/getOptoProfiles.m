@@ -1,4 +1,4 @@
-function optoProfiles = getOptoProfiles(T)
+function optoProfiles = getOptoProfiles(T, condition)
             
 optoProfiles.hitProfiles = [];
 optoProfiles.missProfiles = [];

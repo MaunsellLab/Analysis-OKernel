@@ -12,7 +12,7 @@ function grandAverageKernels(brainArea, stimType)
 
 % if not, throw errors
 assert(ischar(brainArea),'brainArea must be text: SC or V1');
-assert(ischar(stimType),'stimType must be text: Lum, or Gabor or Offset');
+assert(ischar(stimType),'stimType must be text: Lum, or Gabor Offset, or FA');
 
 condition = [brainArea ' ' stimType];
 [~, analysisDirName, tableName] = whichData(condition);
@@ -66,7 +66,7 @@ limits.rampMS = 0;
   if size(U, 1) == 0
     return;
   end
-  stimProfiles = getOptoProfiles(U);
+  stimProfiles = getOptoProfiles(U, condition);
   plotKernelPage(U, limits, stimProfiles);
   saveas(gcf, sprintf('%sFigures/Kernels/%s.pdf', analysisDirName, limits.animal{1}));
 end
