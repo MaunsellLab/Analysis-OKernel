@@ -1,7 +1,6 @@
 function bootKernel
 % Produce the kernel-STA convolutions with CIs.  Bootstrapped STA and kernel profiles are created, and then
 % used to bootstrap convolutions CIs
-
 % Get the bootstrap samples for the STA
 
   numBS = 10000;
