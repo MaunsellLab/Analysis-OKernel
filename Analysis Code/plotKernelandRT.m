@@ -1,9 +1,13 @@
-function plotKernelandRT(stimulus)
+function plotKernelandRT(stimulus, kernelType)
 
 %stimulus = 'Lum';
 %stimulus = 'Gabor';
 %stimulus = 'Offset';
 %stimulus = 'FA';
+
+% kernelType = "stimulus"
+% kernelType = "response"
+
 
 V1Color = [0.8500 0.3250 0.0980];
 SCColor = [0.3010 0.7450 0.9330];
@@ -125,7 +129,7 @@ v1Kernel_early = v1Profiles.earlyProfiles / 2 + 0.5;
 
 %% Bootstrap and Filter
 
-% Filter For Kernels
+% Design Filter For Kernels
 sampleFreqHz = 1000;
 filterLP = designfilt('lowpassfir', 'PassbandFrequency', 90 / sampleFreqHz, ...
     'StopbandFrequency', 2 * 90 / sampleFreqHz, 'PassbandRipple', 1, 'StopbandAttenuation', 60, ...
@@ -134,7 +138,7 @@ filterLP = designfilt('lowpassfir', 'PassbandFrequency', 90 / sampleFreqHz, ...
 % Different Plots depending on whether you are looking at
 % stimulus/motor kernels
 
-if ~strcmp(stimulus, 'FA') % Stimulus Aligned Combined Kernel
+if strcmp(kernelType, 'stimulus') % Stimulus Aligned Combined Kernel
     % Bootstrap V1
     v1BootKernel = bootstrp(250, @mean, v1Kernel);
     v1PCs = prctile(v1BootKernel, [15.9, 50, 84.1]);              % +/- 1 SEM
@@ -189,8 +193,8 @@ if ~strcmp(stimulus, 'FA') % Stimulus Aligned Combined Kernel
     % Plot RTs on right y-axes
     edges = [0:25:800];
     yyaxis right
-    histogram(v1HitRTs+400,edges, 'FaceAlpha', 0.1, 'FaceColor', V1Color, 'edgeAlpha', 0.5); % Have to shift by +400 to align with zero on the x-axis
-    ylabel('Reaction Times');
+    histogram(v1HitRTs+400,edges, 'Normalization', 'probability', 'FaceAlpha', 0.1, 'FaceColor', V1Color, 'edgeAlpha', 0.5); % Have to shift by +400 to align with zero on the x-axis
+    ylabel('probability of behavioral response');
     plotTitle = sprintf('V1 Kernel (n=%d)', nHitsV1+nMissV1);
     title(plotTitle);
     hold off;
@@ -230,8 +234,8 @@ if ~strcmp(stimulus, 'FA') % Stimulus Aligned Combined Kernel
     % Plot RTs on right y-axes
     edges = [0:25:800];
     yyaxis right
-    histogram(scHitRTs+400,edges, 'FaceAlpha', 0.1, 'FaceColor', SCColor, 'edgeAlpha', 0.5); % Have to shift by +400 to align with zero on the x-axis
-    ylabel('Reaction Times');
+    histogram(scHitRTs+400,edges, 'Normalization', 'probability', 'FaceAlpha', 0.1, 'FaceColor', SCColor, 'edgeAlpha', 0.5); % Have to shift by +400 to align with zero on the x-axis
+    ylabel('probability of behavioral response');
     plotTitle = sprintf('SC Kernel (n=%d)', nHitsSC+nMissSC);
     title(plotTitle);
     hold off;
@@ -243,8 +247,8 @@ if ~strcmp(stimulus, 'FA') % Stimulus Aligned Combined Kernel
     ylim(lims);
     yyaxis right
     ax.YColor = 'k';
-    ylim([0 17000]);
-    set(gca,'YTick', [0, 6000]);
+    ylim([0 1]);
+    set(gca,'YTick', [0, 0.25]);
 
     subplot(2,1,2);
     yyaxis left
@@ -252,10 +256,10 @@ if ~strcmp(stimulus, 'FA') % Stimulus Aligned Combined Kernel
     ylim(lims);
     yyaxis right
     ax.YColor = 'k';
-    ylim([0 17000]);
-    set(gca,'YTick', [0, 6000]);
+    ylim([0 1]);
+    set(gca,'YTick', [0, 0.25]);
 
-else % FA and RT Kernels
+elseif strcmp(kernelType, 'response') % FA and RT Kernels
    
     % False Alarms
     v1BootKernel = bootstrp(250, @mean, v1Kernel_early);
