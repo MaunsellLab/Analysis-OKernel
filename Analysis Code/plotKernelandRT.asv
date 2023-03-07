@@ -1,4 +1,5 @@
 function plotKernelandRT(stimulus, kernelType, dp_cut, nSigma, dp_cut_at0)
+
 %stimulus = 'Lum';
 %stimulus = 'Gabor';
 %stimulus = 'Offset';
@@ -267,7 +268,7 @@ if strcmp(kernelType, 'stimulus') % Stimulus Aligned Combined Kernel
     bins = size(v1Kernel, 2);
     xlim(ax, [0, bins]);
     ylabel(yLabel);
-    %llim1 = ylim;
+    llim1 = ylim;
 
     set(gca,'XTick', [0, -plotStartMS, bins]);
     set(gca, 'XTickLabel', {sprintf('%d', plotStartMS), '0', sprintf('%d', plotEndMS)});
@@ -306,7 +307,7 @@ if strcmp(kernelType, 'stimulus') % Stimulus Aligned Combined Kernel
     ax.FontSize = 14;
     bins = size(scKernel, 2);
     xlim(ax, [0, bins]);
-    %llim2 = ylim;
+    llim2 = ylim;
     ax.XGrid = 'on';
     ylabel(yLabel);
     title(plotTitle);
@@ -329,8 +330,7 @@ if strcmp(kernelType, 'stimulus') % Stimulus Aligned Combined Kernel
     hold off;
 
     % Put plots on same axes
-    %lims = [min(min(llim1, llim2)) max(max(llim1, llim2))];
-    lims = [-0.04 0.02];
+    lims = [min(min(llim1, llim2)) max(max(llim1, llim2))];
     subplot(2,1,1)
     yyaxis left
     ylim(lims);
@@ -389,7 +389,7 @@ elseif strcmp(kernelType, 'response') % FA and RT Kernels
     bins = size(v1Kernel_early, 2);
     xlim(ax, [0, bins]);
     ylabel(yLabel);
-    %llim1 = ylim;
+    llim1 = ylim;
     set(gca,'XTick', [0, -plotStartMS+200, bins]);
     set(gca, 'XTickLabel', {sprintf('%d', plotRTStartMS), '0', sprintf('%d', plotRTStartMS + plotEndMS - plotStartMS)});
     set(gca, 'LineWidth', 1);
@@ -418,7 +418,7 @@ elseif strcmp(kernelType, 'response') % FA and RT Kernels
     ax.FontSize = 14;
     bins = size(scKernel, 2);
     xlim(ax, [0, bins]);
-    %llim2 = ylim;
+    llim2 = ylim;
     ax.XGrid = 'on';
     ylabel(yLabel);
     plotTitle = sprintf('SC FA Kernel (n=%d)', nEarlySC);
@@ -432,8 +432,7 @@ elseif strcmp(kernelType, 'response') % FA and RT Kernels
     xlabel('Time Relative to Lever Release');
     hold off;
     % Put plots on same axes
-    %lims = [min(min(llim1, llim2)) max(max(llim1, llim2))];
-    lims = [0.48 0.52];
+    lims = [min(min(llim1, llim2)) max(max(llim1, llim2))];
     subplot(2,1,1);
     ylim(lims);
     subplot(2,1,2);
@@ -479,7 +478,7 @@ elseif strcmp(kernelType, 'response') % FA and RT Kernels
     bins = size(v1Kernel_RT, 2);
     xlim(ax, [0, bins]);
     ylabel(yLabel);
-    %llim1 = ylim;
+    llim1 = ylim;
     set(gca,'XTick', [0, -plotStartMS+200, bins]);
     set(gca, 'XTickLabel', {sprintf('%d', plotRTStartMS), '0', sprintf('%d', plotRTStartMS + plotEndMS - plotStartMS)});
     set(gca, 'LineWidth', 1);
@@ -508,7 +507,7 @@ elseif strcmp(kernelType, 'response') % FA and RT Kernels
     ax.FontSize = 14;
     bins = size(scKernel, 2);
     xlim(ax, [0, bins]);
-    %llim2 = ylim;
+    llim2 = ylim;
     ax.XGrid = 'on';
     ylabel(yLabel);
     plotTitle = sprintf('SC RT Kernel (n=%d)', nHitsSC);
@@ -522,12 +521,13 @@ elseif strcmp(kernelType, 'response') % FA and RT Kernels
     xlabel('Time Relative to Lever Release');
     hold off;
     % Put plots on same axes
-    %lims = [min(min(llim1, llim2)) max(max(llim1, llim2))];
-    lims = [0.48 0.52];
+    lims = [min(min(llim1, llim2)) max(max(llim1, llim2))];
     subplot(2,1,1);
     ylim(lims);
     subplot(2,1,2);
     ylim(lims);  
+
+
 
 end
 

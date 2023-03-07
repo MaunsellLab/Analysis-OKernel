@@ -19,9 +19,9 @@ condition = [brainArea ' ' stimType];
 [~, analysisDataDir, tableName] = whichData(condition);
 
 if contains(computerName(), 'maunsell')
-    load([analysisDirName, tableName], 'T');
+    load([analysisDataDir, tableName], 'T');
 else
-    load([analysisDirName, condition, tableName], 'T');
+    load([analysisDataDir, condition, tableName], 'T');
 end
 
 limits = setLimits('All');
@@ -33,8 +33,8 @@ if strcmp(brainArea,'SC')
 
     if strcmp(stimType,'Lum')
         % Full Kernel For Aligned Luminance Patch
-        animals = {'1458', '1548', '1674', '1675', '1902', '2057', '2058', '2063', '2169', '2236'};
-        % animals = {'2063'};
+        % animals = {'1458', '1548', '1674', '1675', '1902', '2057', '2058', '2063', '2169', '2236'};
+        animals = {'2236'};
     elseif strcmp(stimType,'Gabor')
         % Full Kernel For Aligned Gabor Patch
         animals = {'1548', '1674', '2057', '2058', '2063', '2169', '2236'};
@@ -55,7 +55,8 @@ elseif strcmp(brainArea,'V1')
         animals = {'1960', '2015', '2083', '2126', '2220', '2221'};
     elseif strcmp(stimType,'Gabor')
         % V1 Gabor
-        animals = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};
+        % animals = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};
+        animals = {'2126', '2220'};
     elseif strcmp(stimType,'Offset')
         % V1 Offset
         animals = {'2016', '2083', '2126', '2220', '2221'};
