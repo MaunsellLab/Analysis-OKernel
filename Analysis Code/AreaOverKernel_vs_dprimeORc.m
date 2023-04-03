@@ -1,4 +1,4 @@
-% AOK by d'
+% AOK by criterion
 %% Set Up
 analysisStartMS = 0;
 analysisDurMS = 100;
@@ -22,7 +22,8 @@ limits.rampMS = rampMS;
 limits.animal = {'1960', '2015', '2083', '2126', '2220', '2221'};
 U = selectUsingLimits(lumT, limits);
 condition = ['V1' ' ' 'Lum'];
-V1LumDelta = [U.stimDPrime] - [U.noStimDPrime];
+V1LumD = ([U.stimDPrime] + [U.noStimDPrime])/2;
+V1LumC = ([U.stimC] + [U.noStimC])/2;
 
 % Init AOK Storage
 V1LumAOKs = zeros(height(U),1);
@@ -41,7 +42,8 @@ end
 limits.animal = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};
 U = selectUsingLimits(gabT, limits);
 condition = ['V1' ' ' 'Gabor'];
-V1GabDelta = [U.stimDPrime] - [U.noStimDPrime];
+V1GabD = ([U.stimDPrime] + [U.noStimDPrime])/2;
+V1GabC = ([U.stimC] + [U.noStimC])/2;
 
 % Init AOK Storage
 V1GabAOKs = zeros(height(U),1);
@@ -69,7 +71,8 @@ clear T;
 limits.animal = {'1458', '1548', '1674', '1675', '1902', '1905', '2057', '2058', '2063', '2169', '2236'};
 U = selectUsingLimits(lumT, limits);
 condition = ['SC' ' ' 'Lum'];
-SCLumDelta = [U.stimDPrime] - [U.noStimDPrime];
+SCLumD = ([U.stimDPrime] + [U.noStimDPrime])/2;
+SCLumC = ([U.stimC] + [U.noStimC])/2;
 % Init
 SCLumAOKs = zeros(height(U),1);
 for i = 1:height(U)
@@ -86,7 +89,8 @@ end
 limits.animal = {'1548', '1674', '2057', '2058', '2063', '2169', '2236'};
 U = selectUsingLimits(gabT, limits);
 condition = ['SC' ' ' 'Gabor'];
-SCGabDelta = [U.stimDPrime] - [U.noStimDPrime];
+SCGabD = ([U.stimDPrime] + [U.noStimDPrime])/2;
+SCGabC = ([U.stimC] + [U.noStimC])/2;
 % get all Profiles from this mouse
 for i = 1:height(U)
     load(strcat('/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/MasterFiles/',...
@@ -99,88 +103,170 @@ for i = 1:height(U)
     SCGabAOKs(i,1) = -1*sum(mean(gabKernel(:,analysisStartBin:analysisEndBin)));
 end
 %% Correlation
-[rho,p] = corr(V1GabAOKs, V1GabDelta);
-[rho,p] = corr(SCGabAOKs, SCGabDelta);
-[rho,p] = corr(V1LumAOKs, V1LumDelta);
-[rho,p] = corr(SCLumAOKs, SCLumDelta);
+[rho,p] = corr(V1GabAOKs, V1GabD);
+[rho,p] = corr(SCGabAOKs, SCGabD);
+[rho,p] = corr(V1LumAOKs, V1LumD);
+[rho,p] = corr(SCLumAOKs, SCLumD);
 
 % Fit Linear Function
-f1 = fitlm(V1GabAOKs, V1GabDelta);
-f2 = fitlm(SCGabAOKs, SCGabDelta);
-f3 = fitlm(V1LumAOKs, V1LumDelta);
-f4 = fitlm(SCLumAOKs, SCLumDelta);
-%% Scatters
+f1 = fitlm(V1GabAOKs, V1GabD);
+f2 = fitlm(SCGabAOKs, SCGabD);
+f3 = fitlm(V1LumAOKs, V1LumD);
+f4 = fitlm(SCLumAOKs, SCLumD);
+% AOK By D
 xs = -15:0.01:15;
 
 figure('Position',[10 10 800 1000]);
 subplot(2,2,1);
 hold on;
-scatter(V1GabAOKs, V1GabDelta, 30, 'black', 'filled');
+scatter(V1GabAOKs, V1GabD, 30, 'black', 'filled');
 plot(xs, f1.Coefficients.Estimate(1) + xs.*f1.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
-title('V1 Gabor: AOK by Delta d''');
+title('V1 Gabor: AOK by d''');
 xlabel('Area Over the Kernel');
-ylabel('delta d''');
+ylabel('d''');
 axis square;
 xlim([-15 15]);
-ylim([-0.8 0.8]);
+ylim([0.5 4.5]);
 set(gca, 'FontSize', 14);
 set(gca, 'TickDir', 'out');
 set(gca, 'XTick', [-15 0 15]);
-set(gca, 'YTick', [-0.8 -0.4 0 0.4 0.8]);
+set(gca, 'YTick', [1 2 3 4]);
 box off;
 hold off;
 
 subplot(2,2,2);
 hold on;
-scatter(V1LumAOKs, V1LumDelta, 30, 'black', 'filled');
+scatter(V1LumAOKs, V1LumD, 30, 'black', 'filled');
 plot(xs, f3.Coefficients.Estimate(1) + xs.*f3.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
-title('V1 Luminance: AOK by Delta d''');
+title('V1 Luminance: AOK by d''');
 xlabel('Area Over the Kernel');
-ylabel('delta d''');
+ylabel('d''');
 axis square;
 xlim([-15 15]);
-ylim([-0.8 0.8]);
+ylim([0.5 4.5]);
 set(gca, 'FontSize', 14);
 set(gca, 'TickDir', 'out');
 set(gca, 'XTick', [-15 0 15]);
-set(gca, 'YTick', [-0.8 -0.4 0 0.4 0.8]);
+set(gca, 'YTick', [1 2 3 4]);
 box off;
 hold off;
 
 
 subplot(2,2,3);
 hold on;
-scatter(SCGabAOKs, SCGabDelta, 30, 'black', 'filled');
+scatter(SCGabAOKs, SCGabD, 30, 'black', 'filled');
 plot(xs, f2.Coefficients.Estimate(1) + xs.*f2.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
-title('SC Gabor: AOK by Delta d''');
+title('SC Gabor: AOK by d''');
 xlabel('Area Over the Kernel');
-ylabel('delta d''');
+ylabel('d''');
 axis square;
 xlim([-15 15]);
-ylim([-0.8 0.8]);
+ylim([0.5 4.5]);
 set(gca, 'FontSize', 14);
 set(gca, 'TickDir', 'out');
 set(gca, 'XTick', [-15 0 15]);
-set(gca, 'YTick', [-0.8 -0.4 0 0.4 0.8]);
+set(gca, 'YTick', [1 2 3 4]);
 box off;
 hold off;
 
 subplot(2,2,4);
 hold on;
-scatter(SCLumAOKs, SCLumDelta, 30, 'black', 'filled');
+scatter(SCLumAOKs, SCLumD, 30, 'black', 'filled');
 plot(xs, f4.Coefficients.Estimate(1) + xs.*f4.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
-title('SC Luminance: AOK by Delta d''');
+title('SC Luminance: AOK by d''');
 xlabel('Area Over the Kernel');
-ylabel('delta d''');
+ylabel('d''');
 axis square;
 xlim([-15 15]);
-ylim([-0.8 0.8]);
+ylim([0.5 4.5]);
 set(gca, 'FontSize', 14);
 set(gca, 'TickDir', 'out');
 set(gca, 'XTick', [-15 0 15]);
-set(gca, 'YTick', [-0.8 -0.4 0 0.4 0.8]);
+set(gca, 'YTick', [1 2 3 4]);
 box off;
 hold off;
  
+%% AOK By C
 
+[rho,p] = corr(V1GabAOKs, V1GabC);
+[rho,p] = corr(SCGabAOKs, SCGabC);
+[rho,p] = corr(V1LumAOKs, V1LumC);
+[rho,p] = corr(SCLumAOKs, SCLumC);
+
+% Fit Linear Function
+f1 = fitlm(V1GabAOKs, V1GabC);
+f2 = fitlm(SCGabAOKs, SCGabC);
+f3 = fitlm(V1LumAOKs, V1LumC);
+f4 = fitlm(SCLumAOKs, SCLumC);
+
+
+figure('Position',[10 10 800 1000]);
+subplot(2,2,1);
+hold on;
+scatter(V1GabAOKs, V1GabC, 30, 'black', 'filled');
+plot(xs, f1.Coefficients.Estimate(1) + xs.*f1.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
+title('V1 Gabor: AOK by criterion');
+xlabel('Area Over the Kernel');
+ylabel('criterion');
+axis square;
+xlim([-15 15]);
+ylim([-0.5 1.5]);
+set(gca, 'FontSize', 14);
+set(gca, 'TickDir', 'out');
+set(gca, 'XTick', [-15 0 15]);
+set(gca, 'YTick', [-0.5 0 0.5 1.0 1.5]);
+box off;
+hold off;
+
+subplot(2,2,2);
+hold on;
+scatter(V1LumAOKs, V1LumC, 30, 'black', 'filled');
+plot(xs, f3.Coefficients.Estimate(1) + xs.*f3.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
+title('V1 Luminance: AOK by criterion');
+xlabel('Area Over the Kernel');
+ylabel('criterion');
+axis square;
+xlim([-15 15]);
+ylim([-0.5 1.5]);
+set(gca, 'FontSize', 14);
+set(gca, 'TickDir', 'out');
+set(gca, 'XTick', [-15 0 15]);
+set(gca, 'YTick', [-0.5 0 0.5 1.0 1.5]);
+box off;
+hold off;
+
+
+subplot(2,2,3);
+hold on;
+scatter(SCGabAOKs, SCGabC, 30, 'black', 'filled');
+plot(xs, f2.Coefficients.Estimate(1) + xs.*f2.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
+title('SC Gabor: AOK by criterion');
+xlabel('Area Over the Kernel');
+ylabel('criterion');
+axis square;
+xlim([-15 15]);
+ylim([-0.5 1.5]);
+set(gca, 'FontSize', 14);
+set(gca, 'TickDir', 'out');
+set(gca, 'XTick', [-15 0 15]);
+set(gca, 'YTick', [-0.5 0 0.5 1.0 1.5]);
+box off;
+hold off;
+
+subplot(2,2,4);
+hold on;
+scatter(SCLumAOKs, SCLumC, 30, 'black', 'filled');
+plot(xs, f4.Coefficients.Estimate(1) + xs.*f4.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
+title('SC Luminance: AOK by criterion');
+xlabel('Area Over the Kernel');
+ylabel('criterion');
+axis square;
+xlim([-15 15]);
+ylim([-0.5 1.5]);
+set(gca, 'FontSize', 14);
+set(gca, 'TickDir', 'out');
+set(gca, 'XTick', [-15 0 15]);
+set(gca, 'YTick', [-0.5 0 0.5 1.0 1.5]);
+box off;
+hold off;
 

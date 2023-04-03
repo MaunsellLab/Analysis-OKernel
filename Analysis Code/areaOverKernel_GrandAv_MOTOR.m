@@ -18,15 +18,15 @@ function [BootsAOK_V1, BootsAOK_SC] = ...
 % kernType
 % Can take either 'FA' or 'RT' to generate data for 
 
-analysisStartBin = 501+analysisStartMS; % Lever Release is at bin 601
+analysisStartBin = 601+analysisStartMS; % Lever Release is at bin 601
 analysisEndBin = analysisStartBin + analysisDurMS;
 % Analysis window is 100 ms before lever release.
 %% Load Table and Directory for Stim Profiles
 % Location of the Final Stim Profiles and Tables
 analysisDir = '/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/MasterFiles/';
 % Starts with V1
-v1Folder = strcat(analysisDir, 'V1',' FA/');
-scFolder = strcat(analysisDir, 'SC',' FA/');
+v1Folder = strcat(analysisDir, 'V1',' Gabor/');
+scFolder = strcat(analysisDir, 'SC',' Gabor/');
 % Load Tables for each stimulus type
 load([v1Folder 'masterTable.mat'], 'T');
 v1T = T;
@@ -47,7 +47,7 @@ AOK_SC_95CI  = zeros(1,2);
 % First For Luminance
 limits.animal = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};
 U = selectUsingLimits(v1T, limits);
-condition = ['V1' ' ' 'FA'];
+condition = ['V1' ' ' 'Gabor'];
 
 % Fitted Delta D' Distribution for V1 Data Combined
 if dp_cut == 1
@@ -88,7 +88,7 @@ end
 %% Repeat For SC
 limits.animal = {'1458', '1548', '1674', '1675', '1902', '1905', '2057', '2058', '2063', '2169', '2236'};
 U = selectUsingLimits(scT, limits);
-condition = ['SC' ' ' 'FA'];
+condition = ['SC' ' ' 'Gabor'];
 
 % Fitted Delta D' Distribution for SC Data Combined
 if dp_cut == 1
@@ -167,23 +167,26 @@ AOK_SC_95CI(1,:) = quantile(BootsAOK_SC,[0.025 0.975]);
 % Colors
 V1Color = [0.8500 0.3250 0.0980];
 SCColor = [0.3010 0.7450 0.9330];
-bins = -3:0.2:3;
+bins = -3:0.25:3;
 
 % Figure
 figure('Position', [10 10 1000 500]);
 axis square;
 hold on;
+ylim([0 0.3]);
 histogram(BootsAOK_V1,bins, 'FaceColor', V1Color, 'FaceAlpha', 0.5, 'Normalization','probability');
 histogram(BootsAOK_SC,bins, 'FaceColor', SCColor, 'FaceAlpha', 0.5, 'Normalization','probability');
-title('FA: AOK Bootstraps');
+plot([0 0], [0 max(ylim)], 'Color', 'k', 'LineStyle', '--', 'LineWidth',1);
+plot([median(BootsAOK_V1) median(BootsAOK_V1)], [0 max(ylim)], 'Color', V1Color, 'LineStyle', '--', 'LineWidth',1);
+plot([median(BootsAOK_SC) median(BootsAOK_SC)], [0 max(ylim)], 'Color', SCColor, 'LineStyle', '--', 'LineWidth',1);
+title('RT: AOK Bootstraps');
 box off;
 set(gca, 'TickDir', 'out');
 ylabel('Probability');
 xlabel('Area Over The Kernel');
 set(gca, 'FontSize', 14);
 set(gca, 'LineWidth', 1);
-ylim([0 0.4]);
-xlim([-2.5 2.5]);
+xlim([-3.5 3.5]);
 legend('V1', 'SC', 'Location','northwest');
 hold off;
 

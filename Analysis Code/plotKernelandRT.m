@@ -433,7 +433,7 @@ elseif strcmp(kernelType, 'response') % FA and RT Kernels
     hold off;
     % Put plots on same axes
     %lims = [min(min(llim1, llim2)) max(max(llim1, llim2))];
-    lims = [0.48 0.52];
+    lims = [0.47 0.53];
     subplot(2,1,1);
     ylim(lims);
     subplot(2,1,2);
@@ -523,7 +523,7 @@ elseif strcmp(kernelType, 'response') % FA and RT Kernels
     hold off;
     % Put plots on same axes
     %lims = [min(min(llim1, llim2)) max(max(llim1, llim2))];
-    lims = [0.48 0.52];
+    lims = [0.47 0.53];
     subplot(2,1,1);
     ylim(lims);
     subplot(2,1,2);

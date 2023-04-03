@@ -8,6 +8,8 @@ function [dataDirName, analysisDirName, tableName] = whichData(condition)
 % 'V1 Gabor'
 % 'V1 Lum'
 % 'V1 Offset'
+% 'V1 Lum MM' (Mean Matched)
+% 'V1 Gabor MM' (Mean Matched) 
 
 if contains(computerName(), 'maunsell')
 	dataDirName = '../../../Data/OKernel/';

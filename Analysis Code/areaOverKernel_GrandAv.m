@@ -1,5 +1,5 @@
 function [lumBootsAOK_V1, lumBootsAOK_SC, gabBootsAOK_V1, gabBootsAOK_SC] = ...
-    areaOverKernel_GrandAv(invert, bootSamps, analysisStartMS, analysisDurMS, dp_cut, nSigma)
+    areaOverKernel_GrandAv(bootSamps, analysisStartMS, analysisDurMS, dp_cut, nSigma)
 % Compute Area Over Kernel for Group Data
 % Bootstrap 95%CI per mouse
 % Plot Scatter of results
@@ -131,13 +131,10 @@ gabKernel = [gabProfiles.hitProfiles; -gabProfiles.missProfiles];
 lumKernel = [lumProfiles.hitProfiles; -lumProfiles.missProfiles];
 
 % Compute Mean AOK during the analysis Window
-if invert == 0
-    gabAOK_V1(1,1) = sum(mean(gabKernel(:,analysisStartBin:analysisEndBin)));
-    lumAOK_V1(1,1) = sum(mean(lumKernel(:,analysisStartBin:analysisEndBin)));
-else
-    gabAOK_V1(1,1) = sum(mean(-1*gabKernel(:,analysisStartBin:analysisEndBin)));
-    lumAOK_V1(1,1) = sum(mean(-1*lumKernel(:,analysisStartBin:analysisEndBin)));
-end
+
+gabAOK_V1(1,1) = sum(mean(-1*gabKernel(:,analysisStartBin:analysisEndBin)));
+lumAOK_V1(1,1) = sum(mean(-1*lumKernel(:,analysisStartBin:analysisEndBin)));
+
 
 %% Bootstrap CIs from Stim Profiles (bootNum = num bootstraps)
 % How Many of Each Outcome Type to control bootstrapping to match
@@ -161,16 +158,13 @@ for bootNum = 1:bootSamps
     lumBoot_V1 = lumKernel(lumSamps,:);
     gabBoot_V1 = gabKernel(gabSamps,:);
 
-    if invert == 0
-        % Compute 95%CI during the analysis Window From BootStraps
-        lumBootsAOK_V1(bootNum,1) = sum(mean(lumBoot_V1(:,analysisStartBin:analysisEndBin)));
-        gabBootsAOK_V1(bootNum,1) = sum(mean(gabBoot_V1(:,analysisStartBin:analysisEndBin)));
-    else 
-        lumBootsAOK_V1(bootNum,1) = sum(mean(-1*lumBoot_V1(:,analysisStartBin:analysisEndBin)));
-        gabBootsAOK_V1(bootNum,1) = sum(mean(-1*gabBoot_V1(:,analysisStartBin:analysisEndBin)));
-    end
+
+    lumBootsAOK_V1(bootNum,1) = sum(mean(-1*lumBoot_V1(:,analysisStartBin:analysisEndBin)));
+    gabBootsAOK_V1(bootNum,1) = sum(mean(-1*gabBoot_V1(:,analysisStartBin:analysisEndBin)));
+
 
 end
+
 lumAOK_V1_95CI(1,:) = quantile(lumBootsAOK_V1,[0.025 0.975]);
 gabAOK_V1_95CI(1,:) = quantile(gabBootsAOK_V1,[0.025 0.975]);
 
@@ -278,14 +272,9 @@ end
 gabKernel = [gabProfiles.hitProfiles; -gabProfiles.missProfiles];
 lumKernel = [lumProfiles.hitProfiles; -lumProfiles.missProfiles];
 
-if invert == 0
-    % Compute Mean AOK during the analysis Window
-    gabAOK_SC(1,1) = sum(mean(gabKernel(:,analysisStartBin:analysisEndBin)));
-    lumAOK_SC(1,1) = sum(mean(lumKernel(:,analysisStartBin:analysisEndBin)));
-else 
-    gabAOK_SC(1,1) = sum(mean(-1*gabKernel(:,analysisStartBin:analysisEndBin)));
-    lumAOK_SC(1,1) = sum(mean(-1*lumKernel(:,analysisStartBin:analysisEndBin)));
-end
+gabAOK_SC(1,1) = sum(mean(-1*gabKernel(:,analysisStartBin:analysisEndBin)));
+lumAOK_SC(1,1) = sum(mean(-1*lumKernel(:,analysisStartBin:analysisEndBin)));
+
 %% Bootstrap CIs from Stim Profiles (bootNum = num bootstraps)
 % How Many of Each Outcome Type to control bootstrapping to match
 % experimental proportions
@@ -308,84 +297,14 @@ for bootNum = 1:bootSamps
     lumBoot_SC = lumKernel(lumSamps,:);
     gabBoot_SC = gabKernel(gabSamps,:);
     
-    if invert == 0
-        % Compute 95% CI during the analysis Window From BootStraps
-        lumBootsAOK_SC(bootNum,1) = sum(mean(lumBoot_SC(:,analysisStartBin:analysisEndBin)));
-        gabBootsAOK_SC(bootNum,1) = sum(mean(gabBoot_SC(:,analysisStartBin:analysisEndBin)));
-    else
-        lumBootsAOK_SC(bootNum,1) = sum(mean(-1*lumBoot_SC(:,analysisStartBin:analysisEndBin)));
-        gabBootsAOK_SC(bootNum,1) = sum(mean(-1*gabBoot_SC(:,analysisStartBin:analysisEndBin)));
-    end
 
+    lumBootsAOK_SC(bootNum,1) = sum(mean(-1*lumBoot_SC(:,analysisStartBin:analysisEndBin)));
+    gabBootsAOK_SC(bootNum,1) = sum(mean(-1*gabBoot_SC(:,analysisStartBin:analysisEndBin)));
 end
 
 lumAOK_SC_95CI(1,:) = quantile(lumBootsAOK_SC,[0.025 0.975]);
 gabAOK_SC_95CI(1,:) = quantile(gabBootsAOK_SC,[0.025 0.975]);
 
-%% Make Scatter Plot of Results
-
-V1Color = [0.8500 0.3250 0.0980];
-SCColor = [0.3010 0.7450 0.9330];
-
-figure;
-hold on;
-axis square;
-if invert == 0 % Scatter Plot of AOK
-    % Plot V1
-    scatter(lumAOK_V1, gabAOK_V1, 100, V1Color, 'filled', 'DisplayName', 'V1');
-    % Plot SC
-    scatter(lumAOK_SC, gabAOK_SC, 100, SCColor, 'filled', 'DisplayName', 'SC');
-    % Plot 95% CIs V1
-    plot([lumAOK_V1_95CI(1,1)  lumAOK_V1_95CI(1,2)], [gabAOK_V1 gabAOK_V1], 'LineStyle','-', 'LineWidth',2, 'Color', V1Color);
-    plot([lumAOK_V1 lumAOK_V1], [gabAOK_V1_95CI(1,1) gabAOK_V1_95CI(1,2)], 'LineStyle','-', 'LineWidth',2, 'Color', V1Color);
-    % Plot 95% CIs SC
-    plot([lumAOK_SC_95CI(1,1)  lumAOK_SC_95CI(1,2)], [gabAOK_SC gabAOK_SC], 'LineStyle','-', 'LineWidth',2, 'Color', SCColor);
-    plot([lumAOK_SC lumAOK_SC], [gabAOK_SC_95CI(1,1) gabAOK_SC_95CI(1,2)], 'LineStyle','-', 'LineWidth',2, 'Color', SCColor);
-    % Lines That Divide Quadrants into Effect on Performance
-    plot([-4 4], [0 0], 'LineStyle','--', 'LineWidth',0.5, 'Color', 'k');
-    plot([0 0], [-4 4], 'LineStyle','--', 'LineWidth',0.5, 'Color', 'k');
-    xlabel('Luminance AOK');
-    ylabel('Gabor AOK');
-    title('Area Over Kernel');
-    box off;
-    set(gca, 'TickDir', 'out');
-    set(gca, 'FontSize', 14);
-    set(gca, 'LineWidth', 1);
-    xlim([-3 3]);
-    ylim([-3 3]);
-    legend('V1', 'SC')
-    hold off;
-else % Bar plot
-    b = bar([1,2,3,4], [gabAOK_V1, lumAOK_V1, gabAOK_SC, lumAOK_SC], 0.8);
-    hold on;
-    b.FaceColor = 'flat';
-    % Color Bars
-    b.CData(1,:) = V1Color;
-    b.CData(2,:) = V1Color;
-    b.CData(3,:) = SCColor;
-    b.CData(4,:) = SCColor;
-    % Plot CIs
-    plot([1 1], [gabAOK_V1_95CI(1) gabAOK_V1_95CI(2)], 'LineWidth', 2, 'Color', 'k');
-    plot([2 2], [lumAOK_V1_95CI(1) lumAOK_V1_95CI(2)], 'LineWidth', 2, 'Color', 'k');
-    plot([3 3], [gabAOK_SC_95CI(1) gabAOK_SC_95CI(2)], 'LineWidth', 2, 'Color', 'k');
-    plot([4 4], [lumAOK_SC_95CI(1) lumAOK_SC_95CI(2)], 'LineWidth', 2, 'Color', 'k');
-    % Customize
-    xlim([0.5 4.5]);
-    ylim([-0.75 2.5]);
-    %xlabel('Condition');
-    ylabel('Area Over Kernel');
-    title('AOK');
-    box off;
-    set(gca, 'TickDir', 'out');
-    set(gca, 'FontSize', 14);
-    set(gca, 'LineWidth', 1);
-    set(gca, 'XTick', [1 2 3 4]);
-    NL = "\newline";
-    labelArray = {'Lum'+NL+' V1', 'Gabor'+NL+'  V1', 'Lum'+NL+' SC', 'Gabor'+NL+'  SC'};
-    set(gca, 'XTickLabel', labelArray);
-    set(gca,'YTick', [-0.5 0 2.5]);
-    hold off;
-end
 
 %% Histograms
 % Colors
@@ -407,6 +326,9 @@ xlabel('Area Over The Kernel');
 set(gca, 'FontSize', 14);
 set(gca, 'LineWidth', 1);
 ylim([0 0.35]);
+plot([0 0], [0 max(ylim)], 'Color', 'k', 'LineStyle', '--', 'LineWidth',1);
+plot([median(gabBootsAOK_V1) median(gabBootsAOK_V1)], [0 max(ylim)], 'Color', V1Color, 'LineStyle', '--', 'LineWidth',1);
+plot([median(gabBootsAOK_SC) median(gabBootsAOK_SC)], [0 max(ylim)], 'Color', SCColor, 'LineStyle', '--', 'LineWidth',1);
 xlim([-2.5 2.5]);
 legend('V1', 'SC', 'Location','northwest');
 hold off;
@@ -424,10 +346,12 @@ set(gca, 'LineWidth', 1);
 ylabel('Probability');
 xlabel('Area Over The Kernel');
 ylim([0 0.35]);
+plot([0 0], [0 max(ylim)], 'Color', 'k', 'LineStyle', '--', 'LineWidth',1);
+plot([median(lumBootsAOK_V1) median(lumBootsAOK_V1)], [0 max(ylim)], 'Color', V1Color, 'LineStyle', '--', 'LineWidth',1);
+plot([median(lumBootsAOK_SC) median(lumBootsAOK_SC)], [0 max(ylim)], 'Color', SCColor, 'LineStyle', '--', 'LineWidth',1);
 xlim([-2.5 2.5]);
 legend('V1', 'SC', 'Location','northwest');
 hold off;
-
 
 
 % Different from 0?
