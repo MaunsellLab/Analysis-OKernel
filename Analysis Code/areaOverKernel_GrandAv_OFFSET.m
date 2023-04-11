@@ -187,8 +187,10 @@ xlim([-2.5 2.5]);
 legend('V1', 'SC', 'Location','northwest');
 hold off;
 
-% Different from 0?
-signrank(BootsAOK_SC)
-signrank(BootsAOK_V1)
+% Bootstraps Different from 0?
+v1p = (length(BootsAOK_V1) - sum(BootsAOK_V1>0))/length(BootsAOK_V1)
+scp = (length(BootsAOK_SC) - sum(BootsAOK_SC>0))/length(BootsAOK_SC)
+
+
 end
 

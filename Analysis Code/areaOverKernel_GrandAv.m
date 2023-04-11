@@ -355,8 +355,12 @@ hold off;
 
 
 % Different from 0?
-signrank(lumBootsAOK_SC)
-signrank(lumBootsAOK_V1)
-signrank(gabBootsAOK_SC)
-signrank(gabBootsAOK_V1)
+v1p_lum = (length(lumBootsAOK_V1) - sum(lumBootsAOK_V1>0))/length(lumBootsAOK_V1)
+scp_lum = (length(lumBootsAOK_SC) - sum(lumBootsAOK_SC>0))/length(lumBootsAOK_SC)
+
+v1p_gab = (length(gabBootsAOK_V1) - sum(gabBootsAOK_V1>0))/length(gabBootsAOK_V1)
+scp_gab = (length(gabBootsAOK_SC) - sum(gabBootsAOK_SC>0))/length(gabBootsAOK_SC)
+
+
+
 

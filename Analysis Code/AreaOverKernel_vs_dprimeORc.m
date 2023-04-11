@@ -23,7 +23,9 @@ limits.animal = {'1960', '2015', '2083', '2126', '2220', '2221'};
 U = selectUsingLimits(lumT, limits);
 condition = ['V1' ' ' 'Lum'];
 V1LumD = ([U.stimDPrime] + [U.noStimDPrime])/2;
+V1LumD = [U.noStimDPrime];
 V1LumC = ([U.stimC] + [U.noStimC])/2;
+V1LumC = [U.noStimC];
 
 % Init AOK Storage
 V1LumAOKs = zeros(height(U),1);
@@ -43,7 +45,9 @@ limits.animal = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'}
 U = selectUsingLimits(gabT, limits);
 condition = ['V1' ' ' 'Gabor'];
 V1GabD = ([U.stimDPrime] + [U.noStimDPrime])/2;
+V1GabD = [U.noStimDPrime];
 V1GabC = ([U.stimC] + [U.noStimC])/2;
+V1GabC = [U.noStimC];
 
 % Init AOK Storage
 V1GabAOKs = zeros(height(U),1);
@@ -72,7 +76,9 @@ limits.animal = {'1458', '1548', '1674', '1675', '1902', '1905', '2057', '2058',
 U = selectUsingLimits(lumT, limits);
 condition = ['SC' ' ' 'Lum'];
 SCLumD = ([U.stimDPrime] + [U.noStimDPrime])/2;
+SCLumD = [U.noStimDPrime];
 SCLumC = ([U.stimC] + [U.noStimC])/2;
+SCLumC = [U.noStimC];
 % Init
 SCLumAOKs = zeros(height(U),1);
 for i = 1:height(U)
@@ -90,7 +96,9 @@ limits.animal = {'1548', '1674', '2057', '2058', '2063', '2169', '2236'};
 U = selectUsingLimits(gabT, limits);
 condition = ['SC' ' ' 'Gabor'];
 SCGabD = ([U.stimDPrime] + [U.noStimDPrime])/2;
+SCGabD = [U.noStimDPrime];
 SCGabC = ([U.stimC] + [U.noStimC])/2;
+SCGabC = [U.noStimC];
 % get all Profiles from this mouse
 for i = 1:height(U)
     load(strcat('/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/MasterFiles/',...
@@ -103,16 +111,25 @@ for i = 1:height(U)
     SCGabAOKs(i,1) = -1*sum(mean(gabKernel(:,analysisStartBin:analysisEndBin)));
 end
 %% Correlation
-[rho,p] = corr(V1GabAOKs, V1GabD);
-[rho,p] = corr(SCGabAOKs, SCGabD);
-[rho,p] = corr(V1LumAOKs, V1LumD);
-[rho,p] = corr(SCLumAOKs, SCLumD);
+
+% drop = find(isnan(V1GabD));
+% V1GabAOKs(drop) = [];
+% V1GabD(drop) = [];
+% drop = find(isnan(SCGabD));
+% SCGabAOKs(drop) = [];
+% SCGabD(drop) = [];
+
+[rhoD1,pD1] = corr(V1GabAOKs, V1GabD);
+[rhoD2,pD2] = corr(SCGabAOKs, SCGabD);
+[rhoD3,pD3] = corr(V1LumAOKs, V1LumD);
+[rhoD4,pD4] = corr(SCLumAOKs, SCLumD);
 
 % Fit Linear Function
 f1 = fitlm(V1GabAOKs, V1GabD);
 f2 = fitlm(SCGabAOKs, SCGabD);
 f3 = fitlm(V1LumAOKs, V1LumD);
 f4 = fitlm(SCLumAOKs, SCLumD);
+
 % AOK By D
 xs = -15:0.01:15;
 
@@ -188,10 +205,19 @@ hold off;
  
 %% AOK By C
 
-[rho,p] = corr(V1GabAOKs, V1GabC);
-[rho,p] = corr(SCGabAOKs, SCGabC);
-[rho,p] = corr(V1LumAOKs, V1LumC);
-[rho,p] = corr(SCLumAOKs, SCLumC);
+% eliminate NaNs
+drop = find(isnan(V1GabC));
+V1GabAOKs(drop) = [];
+V1GabC(drop) = [];
+drop = find(isnan(SCGabC));
+SCGabAOKs(drop) = [];
+SCGabC(drop) = [];
+
+
+[rhoC1,pC1] = corr(V1GabAOKs, V1GabC);
+[rhoC2,pC2] = corr(SCGabAOKs, SCGabC);
+[rhoC3,pC3] = corr(V1LumAOKs, V1LumC);
+[rhoC4,pC4] = corr(SCLumAOKs, SCLumC);
 
 % Fit Linear Function
 f1 = fitlm(V1GabAOKs, V1GabC);

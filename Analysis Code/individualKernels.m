@@ -55,8 +55,8 @@ elseif strcmp(brainArea,'V1')
         animals = {'1960', '2015', '2083', '2126', '2220', '2221'};
     elseif strcmp(stimType,'Gabor')
         % V1 Gabor
-        % animals = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};
-        animals = {'2126', '2220'};
+        animals = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};
+        % animals = {'2220'};
     elseif strcmp(stimType,'Offset')
         % V1 Offset
         animals = {'2016', '2083', '2126', '2220', '2221'};

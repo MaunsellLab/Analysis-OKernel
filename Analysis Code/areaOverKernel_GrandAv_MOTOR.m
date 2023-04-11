@@ -173,7 +173,7 @@ bins = -3:0.25:3;
 figure('Position', [10 10 1000 500]);
 axis square;
 hold on;
-ylim([0 0.3]);
+ylim([0 0.32]);
 histogram(BootsAOK_V1,bins, 'FaceColor', V1Color, 'FaceAlpha', 0.5, 'Normalization','probability');
 histogram(BootsAOK_SC,bins, 'FaceColor', SCColor, 'FaceAlpha', 0.5, 'Normalization','probability');
 plot([0 0], [0 max(ylim)], 'Color', 'k', 'LineStyle', '--', 'LineWidth',1);
@@ -191,7 +191,7 @@ legend('V1', 'SC', 'Location','northwest');
 hold off;
 
 % Different from 0?
-v1p = signrank(BootsAOK_V1);
-scp = signrank(BootsAOK_SC);
+v1p = (length(BootsAOK_V1) - sum(BootsAOK_V1>0))/length(BootsAOK_V1)
+scp = (length(BootsAOK_SC) - sum(BootsAOK_SC>0))/length(BootsAOK_SC)
 
 end
