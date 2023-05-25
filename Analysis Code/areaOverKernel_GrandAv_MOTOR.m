@@ -25,8 +25,8 @@ analysisEndBin = analysisStartBin + analysisDurMS;
 % Location of the Final Stim Profiles and Tables
 analysisDir = '/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/MasterFiles/';
 % Starts with V1
-v1Folder = strcat(analysisDir, 'V1',' Gabor/');
-scFolder = strcat(analysisDir, 'SC',' Gabor/');
+v1Folder = strcat(analysisDir, 'V1',' FA/');
+scFolder = strcat(analysisDir, 'SC',' FA/');
 % Load Tables for each stimulus type
 load([v1Folder 'masterTable.mat'], 'T');
 v1T = T;
@@ -47,7 +47,7 @@ AOK_SC_95CI  = zeros(1,2);
 % First For Luminance
 limits.animal = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};
 U = selectUsingLimits(v1T, limits);
-condition = ['V1' ' ' 'Gabor'];
+condition = ['V1' ' ' 'FA'];
 
 % Fitted Delta D' Distribution for V1 Data Combined
 if dp_cut == 1
@@ -88,7 +88,7 @@ end
 %% Repeat For SC
 limits.animal = {'1458', '1548', '1674', '1675', '1902', '1905', '2057', '2058', '2063', '2169', '2236'};
 U = selectUsingLimits(scT, limits);
-condition = ['SC' ' ' 'Gabor'];
+condition = ['SC' ' ' 'FA'];
 
 % Fitted Delta D' Distribution for SC Data Combined
 if dp_cut == 1

@@ -88,6 +88,8 @@ for i = 1:height(U)
 end
 
 % Repeat For Gabor
+% This was just added.
+limits.animal = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};
 U = selectUsingLimits(gabT, limits);
 condition = ['V1' ' ' 'Gabor'];
 
@@ -169,7 +171,6 @@ lumAOK_V1_95CI(1,:) = quantile(lumBootsAOK_V1,[0.025 0.975]);
 gabAOK_V1_95CI(1,:) = quantile(gabBootsAOK_V1,[0.025 0.975]);
 
 %% Repeat for SC
-limits.animal = {'1548', '1674', '2057', '2058', '2063', '2169', '2236'};
 lumFolder = strcat(analysisDir, 'SC',' Lum/');
 gabFolder = strcat(analysisDir, 'SC',' Gabor/');
 clear lumT gabT;
@@ -189,6 +190,7 @@ gabAOK_SC_95CI  = zeros(1,2);
 
 %% Both Gabor and Luminance
 % First For Luminance
+limits.animal = {'1458', '1548', '1674', '1675', '1902', '1905', '2057', '2058', '2063', '2169', '2236'};
 U = selectUsingLimits(lumT, limits);
 condition = ['SC' ' ' 'Lum'];
 
@@ -196,7 +198,6 @@ condition = ['SC' ' ' 'Lum'];
 if dp_cut == 1
     mu = -0.03914;
     sigma = 0.2715;
-
     deltaD = [U.stimDPrime]-[U.noStimDPrime];
     bins = -1:0.1:1;
     cutoff = mu + nSigma*sigma;
@@ -229,6 +230,7 @@ for i = 1:height(U)
 end
 
 % Repeat For Gabor
+limits.animal = {'1548', '1674', '2057', '2058', '2063', '2169', '2236'};
 U = selectUsingLimits(gabT, limits);
 condition = ['SC' ' ' 'Gabor'];
 
@@ -236,7 +238,6 @@ condition = ['SC' ' ' 'Gabor'];
 if dp_cut == 1
     mu = 0.0056;
     sigma = 0.287;
-
     deltaD = [U.stimDPrime]-[U.noStimDPrime];
     bins = -1:0.1:1;
     cutoff = mu + nSigma*sigma;
@@ -325,7 +326,7 @@ ylabel('Probability');
 xlabel('Area Over The Kernel');
 set(gca, 'FontSize', 14);
 set(gca, 'LineWidth', 1);
-ylim([0 0.35]);
+ylim([0 0.4]);
 plot([0 0], [0 max(ylim)], 'Color', 'k', 'LineStyle', '--', 'LineWidth',1);
 plot([median(gabBootsAOK_V1) median(gabBootsAOK_V1)], [0 max(ylim)], 'Color', V1Color, 'LineStyle', '--', 'LineWidth',1);
 plot([median(gabBootsAOK_SC) median(gabBootsAOK_SC)], [0 max(ylim)], 'Color', SCColor, 'LineStyle', '--', 'LineWidth',1);
@@ -345,7 +346,7 @@ set(gca, 'FontSize', 14);
 set(gca, 'LineWidth', 1);
 ylabel('Probability');
 xlabel('Area Over The Kernel');
-ylim([0 0.35]);
+ylim([0 0.4]);
 plot([0 0], [0 max(ylim)], 'Color', 'k', 'LineStyle', '--', 'LineWidth',1);
 plot([median(lumBootsAOK_V1) median(lumBootsAOK_V1)], [0 max(ylim)], 'Color', V1Color, 'LineStyle', '--', 'LineWidth',1);
 plot([median(lumBootsAOK_SC) median(lumBootsAOK_SC)], [0 max(ylim)], 'Color', SCColor, 'LineStyle', '--', 'LineWidth',1);
