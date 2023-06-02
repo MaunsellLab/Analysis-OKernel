@@ -295,7 +295,33 @@ function [row, stimProfiles] = getKernels(file, trials, row, testedContrastPC)
 
   % Get the early profiles
   earlyProfiles = getStimProfiles(trials(theIndices.early & stimIndices), plotRTStartMS, plotRTStartMS + plotEndMS - plotStartMS, true, true);
-  stimProfiles.earlyProfiles = normProfiles(earlyProfiles);  
+  stimProfiles.earlyProfiles = normProfiles(earlyProfiles); 
+
+  % add reward history
+  rwds = zeros(1,length(trials));
+  % The variable naming convention changed in December 2021 for some reason
+  % so first we ask what the variable name was
+  % Either 'rewardUL' or 'reward'
+
+  if isfield(trials, 'reward')
+      for trialNum = 1:length(trials)
+          rwds(trialNum) = sum(trials(trialNum).reward);
+      end
+  elseif isfield(trials, 'rewardUL')
+      for trialNum = 1:length(trials)
+          if ~isempty(trials(trialNum).rewardUL) % If trial was rewarded
+              % Take sum bc sometimes the mice get double rewards if they are
+              % on a roll
+              rwds(trialNum) = sum(trials(trialNum).rewardUL);
+          end
+      end
+  end
+  row.rewards = rwds;
+
+  % Add trial by trial outcomes
+  row.hit  = theIndices.correct;
+  row.miss = theIndices.fail;
+  row.fa   = theIndices.early;
 end
 
 %%
@@ -351,6 +377,10 @@ function row = initializeRow(animalName, fileName, rampMS, testedContrastPC)
   row.stimEarlyRTs = {0};
   row.noStimEarlyRTs = {0};
   row.failRTs = {0};
+  row.rewards = {0};
+  row.hit  = {0};
+  row.miss = {0};
+  row.fa   = {0};
 end
 
 %%
@@ -372,7 +402,8 @@ function [names, types] = tableNamesAndTypes()
     'stimPHit', 'stimPFA', 'stimDPrime', 'stimC', 'noStimPHit', 'noStimPFA', 'noStimDPrime', 'noStimC', ...
     'kernelCI', 'kernelPeak', 'hitKernel', 'failKernel', 'earlyKernel', 'RTKernel', 'SRTKernel', 'randomKernel', ...
     'startRT', 'endRT', ...
-    'topUpCorrectRTs', 'stimCorrectRTs','noStimCorrectRTs' 'topUpEarlyRTs', 'stimEarlyRTs', 'noStimEarlyRTs', 'failRTs'};
+    'topUpCorrectRTs', 'stimCorrectRTs','noStimCorrectRTs' 'topUpEarlyRTs', 'stimEarlyRTs', 'noStimEarlyRTs', 'failRTs',...
+    'rewards', 'hit', 'miss', 'fa'};
   types = {'string', 'string', 'uint32', 'double', 'double', 'double', ...
     'uint32', 'uint32', 'uint32', 'uint32', ...
     'uint32', 'uint32', 'uint32', 'uint32', 'uint32', ...
@@ -381,7 +412,8 @@ function [names, types] = tableNamesAndTypes()
     'double', 'double', 'double',  'double', 'double', 'double', 'double',  'double', ...
     'double', 'double', 'cell', 'cell', 'cell', 'cell', 'cell', 'cell', ...
     'uint32', 'uint32', ...
-    'cell', 'cell', 'cell', 'cell', 'cell', 'cell', 'cell'};
+    'cell', 'cell', 'cell', 'cell', 'cell', 'cell', 'cell',...
+    'cell', 'cell', 'cell', 'cell'};
 end
 
  
