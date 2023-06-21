@@ -136,7 +136,8 @@ function [row, stimProfiles] = getKernels(file, trials, row, testedContrastPC)
   
   eotCodes = [trials(:).trialEnd];                            % extract all trialEnds
   RTs = [trials(:).reactTimeMS];                              % extract all trial RTs  
-	preStimMS = [trialStructs(:).preStimMS];                    % extract preStim times for each trial  
+  preStimMS = [trialStructs(:).preStimMS];                    % extract preStim times for each trial  
+  optoPowerMW = [trialStructs(:).meanPowerMW];
 
   % calculate the overall d'
   theIndices = allIndices(trials, eotCodes);
@@ -322,6 +323,10 @@ function [row, stimProfiles] = getKernels(file, trials, row, testedContrastPC)
   row.hit  = theIndices.correct;
   row.miss = theIndices.fail;
   row.fa   = theIndices.early;
+  row.allRTs = RTs;
+  row.visualStim = contrasts;
+  row.preStimMS = preStimMS;
+  row.optoPowerMW = optoPowerMW;
 end
 
 %%
@@ -381,6 +386,10 @@ function row = initializeRow(animalName, fileName, rampMS, testedContrastPC)
   row.hit  = {0};
   row.miss = {0};
   row.fa   = {0};
+  row.visualStim = {0};
+  row.allRTs = {0};
+  row.preStimMS = {0};
+  row.optoPowerMW = {0};
 end
 
 %%
@@ -403,7 +412,8 @@ function [names, types] = tableNamesAndTypes()
     'kernelCI', 'kernelPeak', 'hitKernel', 'failKernel', 'earlyKernel', 'RTKernel', 'SRTKernel', 'randomKernel', ...
     'startRT', 'endRT', ...
     'topUpCorrectRTs', 'stimCorrectRTs','noStimCorrectRTs' 'topUpEarlyRTs', 'stimEarlyRTs', 'noStimEarlyRTs', 'failRTs',...
-    'rewards', 'hit', 'miss', 'fa'};
+    'rewards', 'hit', 'miss', 'fa',...
+    'visualStim', 'allRTs', 'preStimMS', 'optoPowerMW'};
   types = {'string', 'string', 'uint32', 'double', 'double', 'double', ...
     'uint32', 'uint32', 'uint32', 'uint32', ...
     'uint32', 'uint32', 'uint32', 'uint32', 'uint32', ...
@@ -413,7 +423,8 @@ function [names, types] = tableNamesAndTypes()
     'double', 'double', 'cell', 'cell', 'cell', 'cell', 'cell', 'cell', ...
     'uint32', 'uint32', ...
     'cell', 'cell', 'cell', 'cell', 'cell', 'cell', 'cell',...
+    'cell', 'cell', 'cell', 'cell',...
     'cell', 'cell', 'cell', 'cell'};
 end
 
- 
+
