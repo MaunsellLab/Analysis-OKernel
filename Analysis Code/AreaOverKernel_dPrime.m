@@ -24,6 +24,13 @@ U = selectUsingLimits(lumT, limits);
 condition = ['V1' ' ' 'Lum'];
 V1LumDelta = [U.stimDPrime] - [U.noStimDPrime];
 
+% Idx for which sessions were excluded.
+mu =  -0.011;
+sigma =  0.2326;
+deltaD = [U.stimDPrime]-[U.noStimDPrime];
+cutoff = mu + 1*sigma;
+keepIdxV1Lum = V1LumDelta <= cutoff;
+
 % Init AOK Storage
 V1LumAOKs = zeros(height(U),1);
 % get all Profiles from this mouse
@@ -42,6 +49,12 @@ limits.animal = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'}
 U = selectUsingLimits(gabT, limits);
 condition = ['V1' ' ' 'Gabor'];
 V1GabDelta = [U.stimDPrime] - [U.noStimDPrime];
+
+% Idx for exluded sessions
+mu =  -0.0034;
+sigma = 0.277;
+cutoff = mu + 1*sigma;
+keepIdxV1Gab = V1GabDelta <= cutoff;
 
 % Init AOK Storage
 V1GabAOKs = zeros(height(U),1);
@@ -70,6 +83,13 @@ limits.animal = {'1458', '1548', '1674', '1675', '1902', '1905', '2057', '2058',
 U = selectUsingLimits(lumT, limits);
 condition = ['SC' ' ' 'Lum'];
 SCLumDelta = [U.stimDPrime] - [U.noStimDPrime];
+
+% Idx For Excluded Sessions
+mu = -0.03914;
+sigma = 0.2715;
+cutoff = mu + 1*sigma;
+keepIdxSCLum = SCLumDelta <= cutoff;
+
 % Init
 SCLumAOKs = zeros(height(U),1);
 for i = 1:height(U)
@@ -87,6 +107,14 @@ limits.animal = {'1548', '1674', '2057', '2058', '2063', '2169', '2236'};
 U = selectUsingLimits(gabT, limits);
 condition = ['SC' ' ' 'Gabor'];
 SCGabDelta = [U.stimDPrime] - [U.noStimDPrime];
+
+% Idx of excluded sessions
+mu = 0.0056;
+sigma = 0.287;
+bins = -1:0.1:1;
+cutoff = mu + 1*sigma;
+keepIdxSCGab = SCGabDelta <= cutoff;
+
 % get all Profiles from this mouse
 for i = 1:height(U)
     load(strcat('/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/MasterFiles/',...
@@ -115,7 +143,8 @@ xs = -15:0.01:15;
 figure('Position',[10 10 800 1000]);
 subplot(2,2,1);
 hold on;
-scatter(V1GabAOKs, V1GabDelta, 30, 'black', 'filled');
+scatter(V1GabAOKs(keepIdxV1Gab), V1GabDelta(keepIdxV1Gab), 30, 'black', 'filled');
+scatter(V1GabAOKs(~keepIdxV1Gab), V1GabDelta(~keepIdxV1Gab), 30, 'black');
 plot(xs, f1.Coefficients.Estimate(1) + xs.*f1.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
 title('V1 Gabor: AOK by Delta d''');
 xlabel('Area Over the Kernel');
@@ -132,7 +161,8 @@ hold off;
 
 subplot(2,2,2);
 hold on;
-scatter(V1LumAOKs, V1LumDelta, 30, 'black', 'filled');
+scatter(V1LumAOKs(keepIdxV1Lum), V1LumDelta(keepIdxV1Lum), 30, 'black', 'filled');
+scatter(V1LumAOKs(~keepIdxV1Lum), V1LumDelta(~keepIdxV1Lum), 30, 'black');
 plot(xs, f3.Coefficients.Estimate(1) + xs.*f3.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
 title('V1 Luminance: AOK by Delta d''');
 xlabel('Area Over the Kernel');
@@ -150,7 +180,8 @@ hold off;
 
 subplot(2,2,3);
 hold on;
-scatter(SCGabAOKs, SCGabDelta, 30, 'black', 'filled');
+scatter(SCGabAOKs(keepIdxSCGab), SCGabDelta(keepIdxSCGab), 30, 'black', 'filled');
+scatter(SCGabAOKs(~keepIdxSCGab), SCGabDelta(~keepIdxSCGab), 30, 'black');
 plot(xs, f2.Coefficients.Estimate(1) + xs.*f2.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
 title('SC Gabor: AOK by Delta d''');
 xlabel('Area Over the Kernel');
@@ -167,7 +198,8 @@ hold off;
 
 subplot(2,2,4);
 hold on;
-scatter(SCLumAOKs, SCLumDelta, 30, 'black', 'filled');
+scatter(SCLumAOKs(keepIdxSCLum), SCLumDelta(keepIdxSCLum), 30, 'black', 'filled');
+scatter(SCLumAOKs(~keepIdxSCLum), SCLumDelta(~keepIdxSCLum), 30, 'black');
 plot(xs, f4.Coefficients.Estimate(1) + xs.*f4.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
 title('SC Luminance: AOK by Delta d''');
 xlabel('Area Over the Kernel');
