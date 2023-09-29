@@ -33,8 +33,8 @@ if strcmp(brainArea,'SC')
 
     if strcmp(stimType,'Lum')
         % Full Kernel For Aligned Luminance Patch
-        % animals = {'1458', '1548', '1674', '1675', '1902', '2057', '2058', '2063', '2169', '2236'};
-        animals = {'2236'};
+        animals = {'1458', '1548', '1674', '1675', '1902', '1905', '2057', '2058', '2063', '2169', '2236'};
+        % animals = {'2236'};
     elseif strcmp(stimType,'Gabor')
         % Full Kernel For Aligned Gabor Patch
         animals = {'1548', '1674', '2057', '2058', '2063', '2169', '2236'};

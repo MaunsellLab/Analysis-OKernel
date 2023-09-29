@@ -33,6 +33,7 @@ function CIs = doOneBootPlot(bootstraps, limits, type, startTimeMS, endTimeMS, p
     case {'stim', 'Stim'}
       set(gca,'XTick', [0, -plotStartMS, -plotStartMS + 100, bins]);
       set(gca, 'XTickLabel', {sprintf('%d', plotStartMS), '0', '', sprintf('%d', plotEndMS)});
+      % ylim([-0.1 0.1]); % JJC for showing all individual kernels.
       xlabel('Time Relative to Stimulus');
     case {'rt', 'RT'}
       set(gca,'XTick', [0, -plotRTStartMS, bins]);
