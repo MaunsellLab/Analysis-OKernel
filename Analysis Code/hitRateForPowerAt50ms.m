@@ -209,82 +209,172 @@ for a = 1:length(animals)
 end
 
 
+%% Bar Plots with scatter overlaid
 
-%% Bar Plots
+% Common y-scale for all plots
+yBottom = 0;
+yTop    = 100;
 
-
-
-% plot
-xs = -5:0.01:5;
 
 figure('Position',[10 10 800 1000]);
+% V1 Contrast
 subplot(2,2,1);
 hold on;
-scatter(V1GabAOKs, V1GabDeltaDs, 50, 'black', 'filled');
-plot(xs, f1.Coefficients.Estimate(1) + xs.*f1.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
-title('V1 Gabor: AOK by Delta d''');
-xlabel('Area Over the Kernel');
-ylabel('delta d''');
+% Bar Means
+bar([1 2], mean(V1Gab_hitRate,1), 'FaceColor', 'w', 'LineWidth',1);
+title('V1 Contrast: Off vs. On');
+ylabel('hit rate');
 axis square;
-xlim([-5 5]);
-ylim([-0.5 0.5]);
-set(gca, 'FontSize', 14);
+ylim([yBottom yTop]);
+xticklabels({'', 'LED OFF', '', 'LED ON'});
+% Connecting Lines, one per mouse
+for i = 1:size(V1Gab_hitRate,1)
+    line([1 2], [V1Gab_hitRate(i,1), V1Gab_hitRate(i,2)], 'LineWidth', 0.5, 'Color', '[0.5 0.5 0.5]');
+end
+% Individual Mice values
+scatter(ones(size(V1Gab_hitRate,1),1),[V1Gab_hitRate(:,1)],70, 'k', 'filled');
+scatter(1+ones(size(V1Gab_hitRate,1),1),[V1Gab_hitRate(:,2)],70, 'k', 'filled');
 set(gca, 'TickDir', 'out');
-set(gca, 'XTick', [-5 0 5]);
-set(gca, 'YTick', [-0.8 -0.4 0 0.4 0.8]);
+set(gca, 'FontSize', 14);
 box off;
 hold off;
 
-subplot(2,2,2);
-hold on;
-scatter(V1LumAOKs, V1LumDeltaDs, 50, 'black', 'filled');
-plot(xs, f3.Coefficients.Estimate(1) + xs.*f3.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
-title('V1 Luminance: AOK by Delta d''');
-xlabel('Area Over the Kernel');
-ylabel('delta d''');
-axis square;
-xlim([-5 5]);
-ylim([-0.5 0.5]);
-set(gca, 'FontSize', 14);
-set(gca, 'TickDir', 'out');
-set(gca, 'XTick', [-5 0 5]);
-set(gca, 'YTick', [-0.8 -0.4 0 0.4 0.8]);
-box off;
-hold off;
-
-
+% SC Contrast
 subplot(2,2,3);
 hold on;
-scatter(SCGabAOKs, SCGabDeltaDs, 50, 'black', 'filled');
-plot(xs, f2.Coefficients.Estimate(1) + xs.*f2.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
-title('SC Gabor: AOK by Delta d''');
-xlabel('Area Over the Kernel');
-ylabel('delta d''');
+% Bar Means
+bar([1 2], mean(SCGab_hitRate,1), 'FaceColor', 'w', 'LineWidth',1);
+title('SC Contrast: Off vs. On');
+ylabel('hit rate');
 axis square;
-xlim([-5 5]);
-ylim([-0.5 0.5]);
-set(gca, 'FontSize', 14);
+ylim([yBottom yTop]);
+xticklabels({'', 'LED OFF', '', 'LED ON'});
+% Connecting Lines, one per mouse
+for i = 1:size(SCGab_hitRate,1)
+    line([1 2], [SCGab_hitRate(i,1), SCGab_hitRate(i,2)], 'LineWidth', 0.5, 'Color', '[0.5 0.5 0.5]');
+end
+% Individual Mice values
+scatter(ones(size(SCGab_hitRate,1),1),[SCGab_hitRate(:,1)],70, 'k', 'filled');
+scatter(1+ones(size(SCGab_hitRate,1),1),[SCGab_hitRate(:,2)],70, 'k', 'filled');
 set(gca, 'TickDir', 'out');
-set(gca, 'XTick', [-5 0 5]);
-set(gca, 'YTick', [-0.8 -0.4 0 0.4 0.8]);
+set(gca, 'FontSize', 14);
 box off;
 hold off;
 
-subplot(2,2,4);
+
+% V1 Luminance
+subplot(2,2,2);
 hold on;
-scatter(SCLumAOKs, SCLumDeltaDs, 50, 'black', 'filled');
-plot(xs, f4.Coefficients.Estimate(1) + xs.*f4.Coefficients.Estimate(2), 'Color', 'r', 'LineStyle', '--')
-title('SC Luminance: AOK by Delta d''');
-xlabel('Area Over the Kernel');
-ylabel('delta d''');
+% Bar Means
+bar([1 2], mean(V1Lum_hitRate,1), 'FaceColor', 'w', 'LineWidth',1);
+title('V1 Luminance: Off vs. On');
+ylabel('hit rate');
 axis square;
-xlim([-5 5]);
-ylim([-0.5 0.5]);
-set(gca, 'FontSize', 14);
+ylim([yBottom yTop]);
+xticklabels({'', 'LED OFF', '', 'LED ON'});
+% Connecting Lines, one per mouse
+for i = 1:size(V1Lum_hitRate,1)
+    line([1 2], [V1Lum_hitRate(i,1), V1Lum_hitRate(i,2)], 'LineWidth', 0.5, 'Color', '[0.5 0.5 0.5]');
+end
+% Individual Mice values
+scatter(ones(size(V1Lum_hitRate,1),1),[V1Lum_hitRate(:,1)],70, 'k', 'filled');
+scatter(1+ones(size(V1Lum_hitRate,1),1),[V1Lum_hitRate(:,2)],70, 'k', 'filled');
 set(gca, 'TickDir', 'out');
-set(gca, 'XTick', [-5 0 5]);
-set(gca, 'YTick', [-0.8 -0.4 0 0.4 0.8]);
+set(gca, 'FontSize', 14);
 box off;
 hold off;
- 
+
+% SC Luminance
+subplot(2,2,4);
+hold on;
+% Bar Means
+bar([1 2], mean(SCLum_hitRate,1), 'FaceColor', 'w', 'LineWidth',1);
+title('SC Luminance: Off vs. On');
+ylabel('hit rate');
+axis square;
+ylim([yBottom yTop]);
+xticklabels({'', 'LED OFF', '', 'LED ON'});
+% Connecting Lines, one per mouse
+for i = 1:size(SCLum_hitRate,1)
+    line([1 2], [SCLum_hitRate(i,1), SCLum_hitRate(i,2)], 'LineWidth', 0.5, 'Color', '[0.5 0.5 0.5]');
+end
+% Individual Mice values
+scatter(ones(size(SCLum_hitRate,1),1),[SCLum_hitRate(:,1)],70, 'k', 'filled');
+scatter(1+ones(size(SCLum_hitRate,1),1),[SCLum_hitRate(:,2)],70, 'k', 'filled');
+set(gca, 'TickDir', 'out');
+set(gca, 'FontSize', 14);
+box off;
+hold off;
+
+%% Bootstrapped Kernel Profile of Selected Trials
+
+% Filter For Kernels
+sampleFreqHz = 1000;
+filterLP = designfilt('lowpassfir', 'PassbandFrequency', 90 / sampleFreqHz, ...
+    'StopbandFrequency', 2 * 90 / sampleFreqHz, 'PassbandRipple', 1, 'StopbandAttenuation', 60, ...
+    'DesignMethod','equiripple');
+
+% BootStrapped ON
+BootKernel_ON  = bootstrp(250, @mean, SClumKernel_ON);
+ONPCs = prctile(BootKernel_ON, [15.9, 50, 84.1]);              % +/- 1 SEM
+ONPCMeans = mean(ONPCs, 2);
+% Bootstrapped OFF
+BootKernel_OFF = bootstrp(250, @mean, SClumKernel_OFF);
+OFFPCs = prctile(BootKernel_OFF, [15.9, 50, 84.1]);              % +/- 1 SEM
+OFFPCMeans = mean(OFFPCs, 2);
+
+% CIs
+ONCIs = zeros(3, size(BootKernel_ON, 2));
+OFFCIs = zeros(3, size(BootKernel_OFF, 2));
+for c = 1:3
+    ONCIs(c, :) = filtfilt(filterLP, ONPCs(c, :) - ONPCMeans(c)) + ONPCMeans(c);
+    OFFCIs(c, :) = filtfilt(filterLP, OFFPCs(c, :) - OFFPCMeans(c)) + OFFPCMeans(c);
+end
+%% Figure Showing Kernel Profile of Selected Trials
+
+% Figure Set Up
+bins = 800;
+ONx  = 1:size(ONCIs, 2);
+OFFx = 1:size(OFFCIs,2); 
+[plotStartMS, plotEndMS, plotRTStartMS] = plotLimits();
+yLabel = 'Normalized Power';
+
+figure('Units', 'inches', 'Position', [3, 1, 8, 8]);
+axis square
+plot([0, bins], [0, 0], 'Color', 'k', 'LineStyle','--');
+hold on;
+
+plot(ONx, ONCIs(2, :), 'Color', 'k', 'LineStyle', '-', 'LineWidth',2);
+ONx2 = [ONx, fliplr(ONx)];
+ONfillCI = [ONCIs(1, :), fliplr(ONCIs(3, :))];
+fill(ONx2, ONfillCI, 'k', 'lineStyle', '-', 'edgeColor', 'k', 'edgeAlpha', 0.5, 'faceAlpha', 0.10);
+
+plot(OFFx, OFFCIs(2, :), 'Color', '[0.5 0.5 0.5]', 'LineStyle', '-', 'LineWidth',2);
+OFFx2 = [OFFx, fliplr(OFFx)];
+OFFfillCI = [OFFCIs(1, :), fliplr(OFFCIs(3, :))];
+fill(OFFx2, OFFfillCI, 'k', 'lineStyle', '-', 'edgeColor', '[0.5, 0.5, 0.5]', 'edgeAlpha', 0.5, 'faceAlpha', 0.10);
+
+
+ax = gca;
+ax.YColor = [0 0 0];
+ax.TickDir = 'out';
+ax.XGrid = 'on';
+ax.FontSize = 14;
+xlim(ax, [0, bins]);
+ylabel(yLabel);
+set(gca,'XTick', [0, -plotStartMS, bins]);
+set(gca, 'XTickLabel', {sprintf('%d', plotStartMS), '0', sprintf('%d', plotEndMS)});
+set(gca, 'LineWidth', 1);
+ax.XMinorGrid = 'on';
+ax.MinorGridLineStyle = '--';
+ax.XAxis.MinorTickValues = [0 100 200 300 500 600 700 800];
+xlabel('Time Relative to Stimulus');
+ylim([-0.25 0.25]);
+legend('LED OFF', 'LED ON');
+hold off;
+
+
+
+
+
 
