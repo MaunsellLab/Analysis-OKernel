@@ -1,4 +1,4 @@
-function areaOverKernel(brainArea, bootSamps, analysisStartMS, analysisDurMS);
+function areaOverKernel(brainArea, bootSamps, analysisStartMS, analysisDurMS)
 % Compute Area Over Kernel for Individual Mice
 % Bootstrap 95%CI per mouse
 % Plot Scatter of results

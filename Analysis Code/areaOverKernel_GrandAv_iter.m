@@ -1,8 +1,9 @@
 function [lumBootsAOK_V1, lumBootsAOK_SC, gabBootsAOK_V1, gabBootsAOK_SC] = ...
-    areaOverKernel_GrandAv(bootSamps, analysisStartMS, analysisDurMS, dp_cut, nSigma)
-% Compute Area Over Kernel for Group Data
-% Bootstrap 95%CI per mouse
-% Plot Scatter of results
+    areaOverKernel_GrandAv_iter(bootSamps, dp_cut, nSigma)
+% Iteratively Compute Area Over Kernel for Group Data
+% Over the entire -400 to 400 ms window shown in figures. 
+% Bootstrap to do the test for each bin
+% Spit out significant or not for each bin
 
 % Inputs:
 % invert = 0,1 whether to invert the AOK from negative to positive
@@ -14,9 +15,6 @@ function [lumBootsAOK_V1, lumBootsAOK_SC, gabBootsAOK_V1, gabBootsAOK_SC] = ...
 % (effect of LED).
 % nSigma = number of sigma on delta d' distribution to drop. 
 
-
-analysisStartBin = 401+analysisStartMS; % Stim on is at bin 401
-analysisEndBin = analysisStartBin + analysisDurMS;
 %% Load Table and Directory for Stim Profiles
 
 % Location of the Final Stim Profiles and Tables
@@ -39,13 +37,9 @@ limits = setLimits('All');
 rampMS = 0;
 limits.rampMS = rampMS;
 
-% Init
-gabAOK_V1 = zeros(1,1);
-lumAOK_V1 = zeros(1, 1);
-lumAOK_V1_95CI  = zeros(1,2);
-gabAOK_V1_95CI  = zeros(1,2);
 
-%% Both Gabor and Luminance
+%% V1 Luminance
+
 % First For Luminance
 limits.animal = {'1960', '2015', '2083', '2126', '2220', '2221'};
 U = selectUsingLimits(lumT, limits);
@@ -86,8 +80,7 @@ for i = 1:height(U)
     lumProfiles.stimRTProfiles = [lumProfiles.stimRTProfiles; stimProfiles.stimRTProfiles];
 end
 
-% Repeat For Gabor
-% This was just added.
+%% Repeat For V1 Gabor
 limits.animal = {'1960', '2015', '2016', '2083', '2126', '2207', '2220', '2221'};
 U = selectUsingLimits(gabT, limits);
 condition = ['V1' ' ' 'Gabor'];
@@ -127,17 +120,12 @@ for i = 1:height(U)
     gabProfiles.stimRTProfiles = [gabProfiles.stimRTProfiles; stimProfiles.stimRTProfiles];
 end
 
-% Collate All Traces From This Mouse
+%% Compute AOK bby bootstrapping every bin...
+
+% Collate All Traces 
 gabKernel = [gabProfiles.hitProfiles; -gabProfiles.missProfiles];
 lumKernel = [lumProfiles.hitProfiles; -lumProfiles.missProfiles];
 
-% Compute Mean AOK during the analysis Window
-
-gabAOK_V1(1,1) = sum(mean(-1*gabKernel(:,analysisStartBin:analysisEndBin)));
-lumAOK_V1(1,1) = sum(mean(-1*lumKernel(:,analysisStartBin:analysisEndBin)));
-
-
-%% Bootstrap CIs from Stim Profiles (bootNum = num bootstraps)
 % How Many of Each Outcome Type to control bootstrapping to match
 % experimental proportions
 lum_nHit = size(lumProfiles.hitProfiles,1);
@@ -145,29 +133,73 @@ gab_nHit = size(gabProfiles.hitProfiles,1);
 lum_nTotal = size(lumKernel,1);
 gab_nTotal = size(gabKernel,1);
 
-% Init Archives For BootStrap Samples
-lumBootsAOK_V1 = zeros(bootSamps, 1);
-gabBootsAOK_V1 = zeros(bootSamps, 1);
+% Basics of Analysis
+analysisDurMS = 50; % 100/2 = 50 (Look back 50 ms, look ahead 50 ms)
+analysisStartBin = 51;
+nBins = 750;
 
-for bootNum = 1:bootSamps
-    % Samps For This Round of BootStrapping
-    lumSamps = [randsample(lum_nHit,lum_nHit,true)'...
-        randsample([lum_nHit+1:lum_nTotal],lum_nTotal-lum_nHit,true)]';
-    gabSamps = [randsample(gab_nHit,gab_nHit,true)'...
-        randsample([gab_nHit+1:gab_nTotal],gab_nTotal - gab_nHit,true)]';
-    % Take Samples w/ replacement
-    lumBoot_V1 = lumKernel(lumSamps,:);
-    gabBoot_V1 = gabKernel(gabSamps,:);
+% Init
+gabAOK_V1 = zeros(1,800);
+lumAOK_V1 = zeros(1, 800);
+lumAOK_V1_95CI  = zeros(1,2);
+gabAOK_V1_95CI  = zeros(1,2);
 
-
-    lumBootsAOK_V1(bootNum,1) = sum(mean(-1*lumBoot_V1(:,analysisStartBin:analysisEndBin)));
-    gabBootsAOK_V1(bootNum,1) = sum(mean(-1*gabBoot_V1(:,analysisStartBin:analysisEndBin)));
-
-
+for binNum = analysisDurMS:nBins
+    gabAOK_V1(1,binNum) = sum(mean(-1*gabKernel(:,analysisStartBin-analysisDurMS:analysisStartBin+analysisDurMS-1)));
+    lumAOK_V1(1,binNum) = sum(mean(-1*lumKernel(:,analysisStartBin-analysisDurMS:analysisStartBin+analysisDurMS-1)));
+    analysisStartBin = analysisStartBin+1;
 end
 
-lumAOK_V1_95CI(1,:) = quantile(lumBootsAOK_V1,[0.025 0.975]);
-gabAOK_V1_95CI(1,:) = quantile(gabBootsAOK_V1,[0.025 0.975]);
+%% Bootstrap CIs from Stim Profiles (bootNum = num bootstraps)
+
+analysisDurMS = 50; % 100/2 = 50 (Look back 50 ms, look ahead 50 ms)
+analysisStartBin = 51;
+nBins = 750;
+
+% Init Archives For BootStrap Samples
+lumBootsAOK_V1 = zeros(bootSamps, 800);
+gabBootsAOK_V1 = zeros(bootSamps, 800);
+
+for binNum = 51:nBins
+    for bootNum = 1:bootSamps
+        % Samps For This Round of BootStrapping
+        lumSamps = [randsample(lum_nHit,lum_nHit,true)'...
+            randsample([lum_nHit+1:lum_nTotal],lum_nTotal-lum_nHit,true)]';
+        gabSamps = [randsample(gab_nHit,gab_nHit,true)'...
+            randsample([gab_nHit+1:gab_nTotal],gab_nTotal - gab_nHit,true)]';
+        % Take Samples w/ replacement
+        lumBoot_V1 = lumKernel(lumSamps,:);
+        gabBoot_V1 = gabKernel(gabSamps,:);
+
+        lumBootsAOK_V1(bootNum,binNum) = sum(mean(-1*lumBoot_V1(:,analysisStartBin-analysisDurMS:analysisStartBin+analysisDurMS-1)));
+        gabBootsAOK_V1(bootNum,binNum) = sum(mean(-1*gabBoot_V1(:,analysisStartBin-analysisDurMS:analysisStartBin+analysisDurMS-1)));
+        % Advance Start Bin
+    end
+    analysisStartBin = analysisStartBin+1;
+end
+
+%% Find Bins with Significant AOK
+
+v1p_lum = zeros(1, 800);
+v1p_gab = zeros(1, 800);
+
+for binNum = 51:nBins
+    v1p_lum(1,binNum) = (size(lumBootsAOK_V1,1) - sum(lumBootsAOK_V1(:,binNum)>0))/size(lumBootsAOK_V1,1);
+    v1p_gab(1,binNum) = (size(gabBootsAOK_V1,1) - sum(gabBootsAOK_V1(:,binNum)>0))/size(gabBootsAOK_V1,1);
+end
+
+
+
+
+%% Make Plot of Results
+
+
+
+
+
+
+
+
 
 %% Repeat for SC
 lumFolder = strcat(analysisDir, 'SC',' Lum/');
@@ -272,8 +304,7 @@ end
 gabKernel = [gabProfiles.hitProfiles; -gabProfiles.missProfiles];
 lumKernel = [lumProfiles.hitProfiles; -lumProfiles.missProfiles];
 
-gabAOK_SC(1,1) = sum(mean(-1*gabKernel(:,analysisStartBin:analysisEndBin)));
-lumAOK_SC(1,1) = sum(mean(-1*lumKernel(:,analysisStartBin:analysisEndBin)));
+
 
 %% Bootstrap CIs from Stim Profiles (bootNum = num bootstraps)
 % How Many of Each Outcome Type to control bootstrapping to match
@@ -302,8 +333,7 @@ for bootNum = 1:bootSamps
     gabBootsAOK_SC(bootNum,1) = sum(mean(-1*gabBoot_SC(:,analysisStartBin:analysisEndBin)));
 end
 
-lumAOK_SC_95CI(1,:) = quantile(lumBootsAOK_SC,[0.025 0.975]);
-gabAOK_SC_95CI(1,:) = quantile(gabBootsAOK_SC,[0.025 0.975]);
+
 
 
 %% Histograms
