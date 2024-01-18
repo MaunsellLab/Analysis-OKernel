@@ -1,4 +1,4 @@
-function [lumBootsAOK_V1, lumBootsAOK_SC, gabBootsAOK_V1, gabBootsAOK_SC] = ...
+function [v1p_lum, scp_lum, v1p_gab, scp_gab] = ...
     areaOverKernel_GrandAv_iter(bootSamps, dp_cut, nSigma)
 % Iteratively Compute Area Over Kernel for Group Data
 % Over the entire -400 to 400 ms window shown in figures. 
@@ -30,14 +30,15 @@ lumT = T;
 load([gabFolder 'masterTable.mat'], 'T');
 gabT = T;
 clear T;
+%% Basic SetUp
 
-%% Grab all the stim Profiles one mouse then create kernel
-% Use Limits to Subselect Sessions From Each Mouse
 limits = setLimits('All');
 rampMS = 0;
 limits.rampMS = rampMS;
 
-
+analysisDurMS    = 100; 
+analysisStartBin = 101;
+analysisEndBin   = 700; 
 %% V1 Luminance
 
 % First For Luminance
@@ -120,7 +121,7 @@ for i = 1:height(U)
     gabProfiles.stimRTProfiles = [gabProfiles.stimRTProfiles; stimProfiles.stimRTProfiles];
 end
 
-%% Compute AOK bby bootstrapping every bin...
+%% Collate Traces and compute n's
 
 % Collate All Traces 
 gabKernel = [gabProfiles.hitProfiles; -gabProfiles.missProfiles];
@@ -133,34 +134,17 @@ gab_nHit = size(gabProfiles.hitProfiles,1);
 lum_nTotal = size(lumKernel,1);
 gab_nTotal = size(gabKernel,1);
 
-% Basics of Analysis
-analysisDurMS = 50; % 100/2 = 50 (Look back 50 ms, look ahead 50 ms)
-analysisStartBin = 51;
-nBins = 750;
 
-% Init
-gabAOK_V1 = zeros(1,800);
-lumAOK_V1 = zeros(1, 800);
-lumAOK_V1_95CI  = zeros(1,2);
-gabAOK_V1_95CI  = zeros(1,2);
-
-for binNum = analysisDurMS:nBins
-    gabAOK_V1(1,binNum) = sum(mean(-1*gabKernel(:,analysisStartBin-analysisDurMS:analysisStartBin+analysisDurMS-1)));
-    lumAOK_V1(1,binNum) = sum(mean(-1*lumKernel(:,analysisStartBin-analysisDurMS:analysisStartBin+analysisDurMS-1)));
-    analysisStartBin = analysisStartBin+1;
-end
-
-%% Bootstrap CIs from Stim Profiles (bootNum = num bootstraps)
-
-analysisDurMS = 50; % 100/2 = 50 (Look back 50 ms, look ahead 50 ms)
-analysisStartBin = 51;
-nBins = 750;
+%% Bootstrap over each bin
 
 % Init Archives For BootStrap Samples
 lumBootsAOK_V1 = zeros(bootSamps, 800);
 gabBootsAOK_V1 = zeros(bootSamps, 800);
 
-for binNum = 51:nBins
+% Bin to Start Computing AOK
+startBin = analysisStartBin;
+
+for binNum = analysisStartBin:analysisEndBin
     for bootNum = 1:bootSamps
         % Samps For This Round of BootStrapping
         lumSamps = [randsample(lum_nHit,lum_nHit,true)'...
@@ -171,11 +155,11 @@ for binNum = 51:nBins
         lumBoot_V1 = lumKernel(lumSamps,:);
         gabBoot_V1 = gabKernel(gabSamps,:);
 
-        lumBootsAOK_V1(bootNum,binNum) = sum(mean(-1*lumBoot_V1(:,analysisStartBin-analysisDurMS:analysisStartBin+analysisDurMS-1)));
-        gabBootsAOK_V1(bootNum,binNum) = sum(mean(-1*gabBoot_V1(:,analysisStartBin-analysisDurMS:analysisStartBin+analysisDurMS-1)));
+        lumBootsAOK_V1(bootNum,binNum) = sum(mean(-1*lumBoot_V1(:,startBin:startBin+analysisDurMS-1)));
+        gabBootsAOK_V1(bootNum,binNum) = sum(mean(-1*gabBoot_V1(:,startBin:startBin+analysisDurMS-1)));
         % Advance Start Bin
     end
-    analysisStartBin = analysisStartBin+1;
+    startBin = startBin+1;
 end
 
 %% Find Bins with Significant AOK
@@ -183,23 +167,10 @@ end
 v1p_lum = zeros(1, 800);
 v1p_gab = zeros(1, 800);
 
-for binNum = 51:nBins
+for binNum = analysisStartBin:analysisEndBin
     v1p_lum(1,binNum) = (size(lumBootsAOK_V1,1) - sum(lumBootsAOK_V1(:,binNum)>0))/size(lumBootsAOK_V1,1);
     v1p_gab(1,binNum) = (size(gabBootsAOK_V1,1) - sum(gabBootsAOK_V1(:,binNum)>0))/size(gabBootsAOK_V1,1);
 end
-
-
-
-
-%% Make Plot of Results
-
-
-
-
-
-
-
-
 
 %% Repeat for SC
 lumFolder = strcat(analysisDir, 'SC',' Lum/');
@@ -212,13 +183,6 @@ lumT = T;
 load([gabFolder 'masterTable.mat'], 'T');
 gabT = T;
 clear T;
-
-% Init
-gabAOK_SC = zeros(1,1);
-lumAOK_SC = zeros(1, 1);
-lumAOK_SC_95CI  = zeros(1,2);
-gabAOK_SC_95CI  = zeros(1,2);
-
 %% Both Gabor and Luminance
 % First For Luminance
 limits.animal = {'1458', '1548', '1674', '1675', '1902', '1905', '2057', '2058', '2063', '2169', '2236'};
@@ -300,13 +264,12 @@ for i = 1:height(U)
     gabProfiles.stimRTProfiles = [gabProfiles.stimRTProfiles; stimProfiles.stimRTProfiles];
 end
 
-% Collate All Traces From This Mouse
+%% Collate Traces and n's
+
+% Collate All Traces
 gabKernel = [gabProfiles.hitProfiles; -gabProfiles.missProfiles];
 lumKernel = [lumProfiles.hitProfiles; -lumProfiles.missProfiles];
 
-
-
-%% Bootstrap CIs from Stim Profiles (bootNum = num bootstraps)
 % How Many of Each Outcome Type to control bootstrapping to match
 % experimental proportions
 lum_nHit = size(lumProfiles.hitProfiles,1);
@@ -314,83 +277,41 @@ gab_nHit = size(gabProfiles.hitProfiles,1);
 lum_nTotal = size(lumKernel,1);
 gab_nTotal = size(gabKernel,1);
 
+%% Bootstrap over each bin
+
+
 % Init Archives For BootStrap Samples
-lumBootsAOK_SC = zeros(bootSamps, 1);
-gabBootsAOK_SC = zeros(bootSamps, 1);
+lumBootsAOK_SC = zeros(bootSamps, 800);
+gabBootsAOK_SC = zeros(bootSamps, 800);
 
-for bootNum = 1:bootSamps
-    % Samps For This Round of BootStrapping
-    lumSamps = [randsample(lum_nHit,lum_nHit,true)'...
-        randsample([lum_nHit+1:lum_nTotal],lum_nTotal-lum_nHit,true)]';
-    gabSamps = [randsample(gab_nHit,gab_nHit,true)'...
-        randsample([gab_nHit+1:gab_nTotal],gab_nTotal - gab_nHit,true)]';
-    % Take Samples w/ replacement
-    lumBoot_SC = lumKernel(lumSamps,:);
-    gabBoot_SC = gabKernel(gabSamps,:);
-    
+startBin = analysisStartBin;
 
-    lumBootsAOK_SC(bootNum,1) = sum(mean(-1*lumBoot_SC(:,analysisStartBin:analysisEndBin)));
-    gabBootsAOK_SC(bootNum,1) = sum(mean(-1*gabBoot_SC(:,analysisStartBin:analysisEndBin)));
+for binNum = analysisStartBin:analysisEndBin
+    for bootNum = 1:bootSamps
+        % Samps For This Round of BootStrapping
+        lumSamps = [randsample(lum_nHit,lum_nHit,true)'...
+            randsample([lum_nHit+1:lum_nTotal],lum_nTotal-lum_nHit,true)]';
+        gabSamps = [randsample(gab_nHit,gab_nHit,true)'...
+            randsample([gab_nHit+1:gab_nTotal],gab_nTotal - gab_nHit,true)]';
+        % Take Samples w/ replacement
+        lumBoot_SC = lumKernel(lumSamps,:);
+        gabBoot_SC = gabKernel(gabSamps,:);
+        
+        % Compute AOK at this Bin
+        lumBootsAOK_SC(bootNum,binNum) = sum(mean(-1*lumBoot_SC(:,startBin:startBin+analysisDurMS-1)));
+        gabBootsAOK_SC(bootNum,binNum) = sum(mean(-1*gabBoot_SC(:,startBin:startBin+analysisDurMS-1)));
+        % Advance Start Bin
+    end
+    startBin = startBin+1; % Advance Analysis Window
 end
 
+%% Evaluate Results over each Bin of the Bootstrap
+scp_lum = zeros(1, 800);
+scp_gab = zeros(1, 800);
 
-
-
-%% Histograms
-% Colors
-V1Color = [0.8500 0.3250 0.0980];
-SCColor = [0.3010 0.7450 0.9330];
-bins = -3:0.2:3;
-% Figure
-figure('Position', [10 10 1000 500]);
-subplot(1,2,1); %Gabors First
-axis square;
-hold on;
-histogram(gabBootsAOK_V1,bins, 'FaceColor', V1Color, 'FaceAlpha', 0.5, 'Normalization','probability');
-histogram(gabBootsAOK_SC,bins, 'FaceColor', SCColor, 'FaceAlpha', 0.5, 'Normalization','probability');
-title('Gabor: AOK Bootstraps');
-box off;
-set(gca, 'TickDir', 'out');
-ylabel('Probability');
-xlabel('Area Over The Kernel');
-set(gca, 'FontSize', 14);
-set(gca, 'LineWidth', 1);
-ylim([0 0.4]);
-plot([0 0], [0 max(ylim)], 'Color', 'k', 'LineStyle', '--', 'LineWidth',1);
-plot([median(gabBootsAOK_V1) median(gabBootsAOK_V1)], [0 max(ylim)], 'Color', V1Color, 'LineStyle', '--', 'LineWidth',1);
-plot([median(gabBootsAOK_SC) median(gabBootsAOK_SC)], [0 max(ylim)], 'Color', SCColor, 'LineStyle', '--', 'LineWidth',1);
-xlim([-2.5 2.5]);
-legend('V1', 'SC', 'Location','northwest');
-hold off;
-
-subplot(1,2,2); % Luminance
-axis square;
-hold on;
-histogram(lumBootsAOK_V1,bins, 'FaceColor', V1Color, 'FaceAlpha', 0.5, 'Normalization','probability');
-histogram(lumBootsAOK_SC,bins, 'FaceColor', SCColor, 'FaceAlpha', 0.5,'Normalization','probability');
-title('Luminance: AOK Bootstraps');
-box off;
-set(gca, 'TickDir', 'out');
-set(gca, 'FontSize', 14);
-set(gca, 'LineWidth', 1);
-ylabel('Probability');
-xlabel('Area Over The Kernel');
-ylim([0 0.4]);
-plot([0 0], [0 max(ylim)], 'Color', 'k', 'LineStyle', '--', 'LineWidth',1);
-plot([median(lumBootsAOK_V1) median(lumBootsAOK_V1)], [0 max(ylim)], 'Color', V1Color, 'LineStyle', '--', 'LineWidth',1);
-plot([median(lumBootsAOK_SC) median(lumBootsAOK_SC)], [0 max(ylim)], 'Color', SCColor, 'LineStyle', '--', 'LineWidth',1);
-xlim([-2.5 2.5]);
-legend('V1', 'SC', 'Location','northwest');
-hold off;
-
-
-% Different from 0?
-v1p_lum = (length(lumBootsAOK_V1) - sum(lumBootsAOK_V1>0))/length(lumBootsAOK_V1)
-scp_lum = (length(lumBootsAOK_SC) - sum(lumBootsAOK_SC>0))/length(lumBootsAOK_SC)
-
-v1p_gab = (length(gabBootsAOK_V1) - sum(gabBootsAOK_V1>0))/length(gabBootsAOK_V1)
-scp_gab = (length(gabBootsAOK_SC) - sum(gabBootsAOK_SC>0))/length(gabBootsAOK_SC)
-
-
+for binNum = analysisStartBin:analysisEndBin
+    scp_lum(1,binNum) = (size(lumBootsAOK_SC,1) - sum(lumBootsAOK_SC(:,binNum)>0))/size(lumBootsAOK_SC,1);
+    scp_gab(1,binNum) = (size(gabBootsAOK_SC,1) - sum(gabBootsAOK_SC(:,binNum)>0))/size(gabBootsAOK_SC,1);
+end
 
 
