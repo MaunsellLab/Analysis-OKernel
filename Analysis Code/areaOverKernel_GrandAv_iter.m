@@ -36,9 +36,9 @@ limits = setLimits('All');
 rampMS = 0;
 limits.rampMS = rampMS;
 
-analysisDurMS    = 100; 
-analysisStartBin = 101;
-analysisEndBin   = 700; 
+analysisDurMS    = 25; % Was 100
+analysisStartBin = 26;
+analysisEndBin   = 775; 
 %% V1 Luminance
 
 % First For Luminance
