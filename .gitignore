@@ -97,3 +97,5 @@ Figures/Kernels/All 2.pdf
 Figures/Kernels/All.pdf
 Analysis Code/plotAllMouseKernels.asv
 *.asv
+Analysis Code/isItPrime.m
+Analysis Code/isPrime.m
