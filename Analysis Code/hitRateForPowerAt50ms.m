@@ -7,7 +7,7 @@ centerBin    = 0; % Center of Test Window (average peak time of NBK == 51 ms acr
 leftSpan     = floor(windowSpanMS/2); % 
 rightSpan    = ceil(windowSpanMS/2);
 startBin     = stimOnBin + centerBin - leftSpan; % Start of Analysis Window after stim onset
-endBin       = stimOnBin + centerBin + rightSpan; % End of Analysis Windown after stim onset
+endBin       = stimOnBin + centerBin + rightSpan-1; % End of Analysis Windown after stim onset
 %% Location of the Final Stim Profiles and Tables For V1
 analysisDir = '/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/MasterFiles/';
 % Starts with V1
@@ -51,10 +51,10 @@ for a = 1:length(animals)
     end
     
     % List of trials for hits/misses with power on during critical window
-    hitListON   = any(V1lumKernel_H(:,startBin:endBin) == 1,2);
-    hitListOFF  = any(V1lumKernel_H(:,startBin:endBin) ~= 1,2);
-    missListON  = any(V1lumKernel_M(:,startBin:endBin) == 1,2);
-    missListOFF = any(V1lumKernel_M(:,startBin:endBin) ~= 1,2);
+    hitListON   = all(V1lumKernel_H(:,startBin:endBin) == 1,2);
+    hitListOFF  = all(V1lumKernel_H(:,startBin:endBin) ~= 1,2);
+    missListON  = all(V1lumKernel_M(:,startBin:endBin) == 1,2);
+    missListOFF = all(V1lumKernel_M(:,startBin:endBin) ~= 1,2);
 
     % Power Off During Window
     V1Lum_hitRate(a,1) = 100*(sum(hitListOFF)/(sum(hitListOFF)+sum(missListOFF)));
@@ -62,8 +62,8 @@ for a = 1:length(animals)
     V1Lum_hitRate(a,2) = 100*(sum(hitListON)/(sum(hitListON)+sum(missListON)));
 
     % Add Kernels to Master List
-    V1lumKernel_ON  = [V1lumKernel_ON; [V1lumKernel_H(hitListON,:); -V1lumKernel_M(missListON,:)]];
-    V1lumKernel_OFF = [V1lumKernel_OFF; [V1lumKernel_H(hitListOFF,:); -V1lumKernel_M(missListOFF,:)]];
+    V1lumKernel_ON  = [V1lumKernel_ON; [V1lumKernel_H(hitListON,:); V1lumKernel_M(missListON,:)]];
+    V1lumKernel_OFF = [V1lumKernel_OFF; [V1lumKernel_H(hitListOFF,:); V1lumKernel_M(missListOFF,:)]];
 end
 
 
@@ -96,10 +96,10 @@ for a = 1:length(animals)
     end
    
     % List of trials for hits/misses with power on during critical window
-    hitListON   = any(V1gabKernel_H(:,startBin:endBin) == 1,2);
-    hitListOFF  = any(V1gabKernel_H(:,startBin:endBin) ~= 1,2);
-    missListON  = any(V1gabKernel_M(:,startBin:endBin) == 1,2);
-    missListOFF = any(V1gabKernel_M(:,startBin:endBin) ~= 1,2);
+    hitListON   = all(V1gabKernel_H(:,startBin:endBin) == 1,2);
+    hitListOFF  = all(V1gabKernel_H(:,startBin:endBin) ~= 1,2);
+    missListON  = all(V1gabKernel_M(:,startBin:endBin) == 1,2);
+    missListOFF = all(V1gabKernel_M(:,startBin:endBin) ~= 1,2);
 
     % Power Off During Window
     V1Gab_hitRate(a,1) = 100*(sum(hitListOFF)/(sum(hitListOFF)+sum(missListOFF)));
@@ -107,8 +107,8 @@ for a = 1:length(animals)
     V1Gab_hitRate(a,2) = 100*(sum(hitListON)/(sum(hitListON)+sum(missListON)));
 
     % Add Kernels to Master List
-    V1gabKernel_ON  = [V1gabKernel_ON; [V1gabKernel_H(hitListON,:); -V1gabKernel_M(missListON,:)]];
-    V1gabKernel_OFF = [V1gabKernel_OFF; [V1gabKernel_H(hitListOFF,:); -V1gabKernel_M(missListOFF,:)]];
+    V1gabKernel_ON  = [V1gabKernel_ON; [V1gabKernel_H(hitListON,:); V1gabKernel_M(missListON,:)]];
+    V1gabKernel_OFF = [V1gabKernel_OFF; [V1gabKernel_H(hitListOFF,:); V1gabKernel_M(missListOFF,:)]];
 end
 
 
@@ -151,10 +151,10 @@ for a = 1:length(animals)
     end
     
     % List of trials for hits/misses with power on during critical window
-    hitListON   = any(SClumKernel_H(:,startBin:endBin) == 1,2);
-    hitListOFF  = any(SClumKernel_H(:,startBin:endBin) ~= 1,2);
-    missListON  = any(SClumKernel_M(:,startBin:endBin) == 1,2);
-    missListOFF = any(SClumKernel_M(:,startBin:endBin) ~= 1,2);
+    hitListON   = all(SClumKernel_H(:,startBin:endBin) == 1,2);
+    hitListOFF  = all(SClumKernel_H(:,startBin:endBin) ~= 1,2);
+    missListON  = all(SClumKernel_M(:,startBin:endBin) == 1,2);
+    missListOFF = all(SClumKernel_M(:,startBin:endBin) ~= 1,2);
 
     % Power Off During Window
     SCLum_hitRate(a,1) = 100*(sum(hitListOFF)/(sum(hitListOFF)+sum(missListOFF)));
@@ -162,8 +162,8 @@ for a = 1:length(animals)
     SCLum_hitRate(a,2) = 100*(sum(hitListON)/(sum(hitListON)+sum(missListON)));
 
     % Add Kernels to Master List
-    SClumKernel_ON  = [SClumKernel_ON; [SClumKernel_H(hitListON,:); -SClumKernel_M(missListON,:)]];
-    SClumKernel_OFF = [SClumKernel_OFF; [SClumKernel_H(hitListOFF,:); -SClumKernel_M(missListOFF,:)]];
+    SClumKernel_ON  = [SClumKernel_ON; [SClumKernel_H(hitListON,:); SClumKernel_M(missListON,:)]];
+    SClumKernel_OFF = [SClumKernel_OFF; [SClumKernel_H(hitListOFF,:); SClumKernel_M(missListOFF,:)]];
 
 end
 
@@ -196,10 +196,10 @@ for a = 1:length(animals)
     end
     
     % List of trials for hits/misses with power on during critical window
-    hitListON   = any(SCgabKernel_H(:,startBin:endBin) == 1,2);
-    hitListOFF  = any(SCgabKernel_H(:,startBin:endBin) ~= 1,2);
-    missListON  = any(SCgabKernel_M(:,startBin:endBin) == 1,2);
-    missListOFF = any(SCgabKernel_M(:,startBin:endBin) ~= 1,2);
+    hitListON   = all(SCgabKernel_H(:,startBin:endBin) == 1,2);
+    hitListOFF  = all(SCgabKernel_H(:,startBin:endBin) ~= 1,2);
+    missListON  = all(SCgabKernel_M(:,startBin:endBin) == 1,2);
+    missListOFF = all(SCgabKernel_M(:,startBin:endBin) ~= 1,2);
 
     % Power Off During Window
     SCGab_hitRate(a,1) = 100*(sum(hitListOFF)/(sum(hitListOFF)+sum(missListOFF)));
@@ -207,8 +207,8 @@ for a = 1:length(animals)
     SCGab_hitRate(a,2) = 100*(sum(hitListON)/(sum(hitListON)+sum(missListON)));
 
     % Add Kernels to Master List
-    SCgabKernel_ON  = [SClumKernel_ON; [SCgabKernel_H(hitListON,:); -SCgabKernel_M(missListON,:)]];
-    SCgabKernel_OFF = [SClumKernel_OFF; [SCgabKernel_H(hitListOFF,:); -SCgabKernel_M(missListOFF,:)]];
+    SCgabKernel_ON  = [SClumKernel_ON; [SCgabKernel_H(hitListON,:); SCgabKernel_M(missListON,:)]];
+    SCgabKernel_OFF = [SClumKernel_OFF; [SCgabKernel_H(hitListOFF,:); SCgabKernel_M(missListOFF,:)]];
 
 end
 
@@ -218,8 +218,8 @@ end
 
 
 % Common y-scale for all plots
-yBottom = 0.85;
-yTop    = 1.05;
+yBottom = 0.80;
+yTop    = 1.1;
 
 figure('Position',[10 10 800 1000]);
 % V1 Contrast
@@ -241,7 +241,7 @@ scatter(ones(size(V1Gab_hitRate,1),1),[V1Gab_hitRate(:,1)./V1Gab_hitRate(:,1)],7
 scatter(1+ones(size(V1Gab_hitRate,1),1),[V1Gab_hitRate(:,2)./V1Gab_hitRate(:,1)],70, 'k');
 set(gca, 'TickDir', 'out');
 set(gca, 'FontSize', 14);
-yticks([0.9 1.0 1.1]);
+yticks([0.8 0.9 1.0 1.1]);
 xlim([0.5 2.5]);
 box off;
 hold off;
@@ -265,7 +265,7 @@ scatter(ones(size(SCGab_hitRate,1),1),[SCGab_hitRate(:,1)./SCGab_hitRate(:,1)],7
 scatter(1+ones(size(SCGab_hitRate,1),1),[SCGab_hitRate(:,2)./SCGab_hitRate(:,1)],70, 'k');
 set(gca, 'TickDir', 'out');
 set(gca, 'FontSize', 14);
-yticks([0.9 1.0 1.1]);
+yticks([0.8 0.9 1.0 1.1]);
 xlim([0.5 2.5]);
 box off;
 hold off;
@@ -290,7 +290,7 @@ scatter(ones(size(V1Lum_hitRate,1),1),[V1Lum_hitRate(:,1)./V1Lum_hitRate(:,1)],7
 scatter(1+ones(size(V1Lum_hitRate,1),1),[V1Lum_hitRate(:,2)./V1Lum_hitRate(:,1)],70, 'k');
 set(gca, 'TickDir', 'out');
 set(gca, 'FontSize', 14);
-yticks([0.9 1.0 1.1]);
+yticks([0.8 0.9 1.0 1.1]);
 xlim([0.5 2.5]);
 box off;
 hold off;
@@ -314,7 +314,7 @@ scatter(ones(size(SCLum_hitRate,1),1),[SCLum_hitRate(:,1)./SCLum_hitRate(:,1)],7
 scatter(1+ones(size(SCLum_hitRate,1),1),[SCLum_hitRate(:,2)./SCLum_hitRate(:,1)],70, 'k');
 set(gca, 'TickDir', 'out');
 set(gca, 'FontSize', 14);
-yticks([0.9 1.0 1.1]);
+yticks([0.8 0.9 1.0 1.1]);
 xlim([0.5 2.5]);
 box off;
 hold off;
@@ -351,6 +351,23 @@ for c = 1:3
 end
 %% Figure Showing Kernel Profile of Selected Trials
 
+
+
+
+% Kernel for OFF Trials
+plot(OFFx, OFFCIs(2, :), 'Color', '[0.5 0.5 0.5]', 'LineStyle', '-', 'LineWidth',2);
+OFFx2 = [OFFx, fliplr(OFFx)];
+OFFfillCI = [OFFCIs(1, :), fliplr(OFFCIs(3, :))];
+fill(OFFx2, OFFfillCI, 'k', 'lineStyle', '-', 'edgeColor', '[0.5, 0.5, 0.5]', 'edgeAlpha', 0.5, 'faceAlpha', 0.10);
+% Kernel for ON Trials
+plot(ONx, ONCIs(2, :), 'Color', 'k', 'LineStyle', '-', 'LineWidth',2);
+ONx2 = [ONx, fliplr(ONx)];
+ONfillCI = [ONCIs(1, :), fliplr(ONCIs(3, :))];
+fill(ONx2, ONfillCI, 'k', 'lineStyle', '-', 'edgeColor', 'k', 'edgeAlpha', 0.5, 'faceAlpha', 0.10);
+
+ONfillCI = [ONCIs(1, :), fliplr(ONCIs(3, :))];
+
+
 % Figure Set Up
 bins = 800;
 ONx  = 1:size(ONCIs, 2);
@@ -362,15 +379,8 @@ figure('Units', 'inches', 'Position', [3, 1, 8, 8]);
 axis square
 plot([0, bins], [0, 0], 'Color', 'k', 'LineStyle','--');
 hold on;
-% Kernel for OFF Trials
-plot(OFFx, OFFCIs(2, :), 'Color', '[0.5 0.5 0.5]', 'LineStyle', '-', 'LineWidth',2);
-OFFx2 = [OFFx, fliplr(OFFx)];
-OFFfillCI = [OFFCIs(1, :), fliplr(OFFCIs(3, :))];
-fill(OFFx2, OFFfillCI, 'k', 'lineStyle', '-', 'edgeColor', '[0.5, 0.5, 0.5]', 'edgeAlpha', 0.5, 'faceAlpha', 0.10);
-% Kernel for ON Trials
-plot(ONx, ONCIs(2, :), 'Color', 'k', 'LineStyle', '-', 'LineWidth',2);
-ONx2 = [ONx, fliplr(ONx)];
-ONfillCI = [ONCIs(1, :), fliplr(ONCIs(3, :))];
+plot(ONx,mean(SClumKernel_ON,1), 'Color', 'k', 'LineStyle', '-', 'LineWidth',2);
+
 fill(ONx2, ONfillCI, 'k', 'lineStyle', '-', 'edgeColor', 'k', 'edgeAlpha', 0.5, 'faceAlpha', 0.10);
 
 ax = gca;
@@ -383,11 +393,11 @@ ylabel(yLabel);
 set(gca,'XTick', [0, -plotStartMS, bins]);
 set(gca, 'XTickLabel', {sprintf('%d', plotStartMS), '0', sprintf('%d', plotEndMS)});
 set(gca, 'LineWidth', 1);
-set(gca,'YTick', [-0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3]);
+set(gca,'YTick', [-1.0, -0.5, 0.0, 0.5, 1.0]);
 ax.XMinorGrid = 'on';
 ax.MinorGridLineStyle = '--';
 ax.XAxis.MinorTickValues = [0 100 200 300 500 600 700 800];
 xlabel('Time Relative to Stimulus');
-ylim([-0.3 0.3]);
+ylim([-1.0 1.0]);
 legend('','LED OFF', '', 'LED ON');
 hold off;

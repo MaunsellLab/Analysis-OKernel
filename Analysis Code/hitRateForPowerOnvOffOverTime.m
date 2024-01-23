@@ -52,10 +52,10 @@ for a = 1:length(animals)
         endBin       = (windowSpanMS*binNum);
 
         % List of trials for hits/misses with power on during critical window
-        hitListON   = any(V1lumKernel_H(:,startBin:endBin) == 1,2);
-        hitListOFF  = any(V1lumKernel_H(:,startBin:endBin) ~= 1,2);
-        missListON  = any(V1lumKernel_M(:,startBin:endBin) == 1,2);
-        missListOFF = any(V1lumKernel_M(:,startBin:endBin) ~= 1,2);
+        hitListON   = all(V1lumKernel_H(:,startBin:endBin) == 1,2);
+        hitListOFF  = all(V1lumKernel_H(:,startBin:endBin) ~= 1,2);
+        missListON  = all(V1lumKernel_M(:,startBin:endBin) == 1,2);
+        missListOFF = all(V1lumKernel_M(:,startBin:endBin) ~= 1,2);
 
         % Power Off During Window
         V1Lum_hitRate(binNum,1,a) = 100*(sum(hitListOFF)/(sum(hitListOFF)+sum(missListOFF)));
@@ -94,10 +94,10 @@ for a = 1:length(animals)
         endBin       = (windowSpanMS*binNum);
 
         % List of trials for hits/misses with power on during critical window
-        hitListON   = any(V1gabKernel_H(:,startBin:endBin) == 1,2);
-        hitListOFF  = any(V1gabKernel_H(:,startBin:endBin) ~= 1,2);
-        missListON  = any(V1gabKernel_M(:,startBin:endBin) == 1,2);
-        missListOFF = any(V1gabKernel_M(:,startBin:endBin) ~= 1,2);
+        hitListON   = all(V1gabKernel_H(:,startBin:endBin) == 1,2);
+        hitListOFF  = all(V1gabKernel_H(:,startBin:endBin) ~= 1,2);
+        missListON  = all(V1gabKernel_M(:,startBin:endBin) == 1,2);
+        missListOFF = all(V1gabKernel_M(:,startBin:endBin) ~= 1,2);
 
         % Power Off During Window
         V1Gab_hitRate(binNum,1,a) = 100*(sum(hitListOFF)/(sum(hitListOFF)+sum(missListOFF)));
@@ -147,10 +147,10 @@ for a = 1:length(animals)
         endBin       = (windowSpanMS*binNum);
 
         % List of trials for hits/misses with power on during critical window
-        hitListON   = any(SClumKernel_H(:,startBin:endBin) == 1,2);
-        hitListOFF  = any(SClumKernel_H(:,startBin:endBin) ~= 1,2);
-        missListON  = any(SClumKernel_M(:,startBin:endBin) == 1,2);
-        missListOFF = any(SClumKernel_M(:,startBin:endBin) ~= 1,2);
+        hitListON   = all(SClumKernel_H(:,startBin:endBin) == 1,2);
+        hitListOFF  = all(SClumKernel_H(:,startBin:endBin) ~= 1,2);
+        missListON  = all(SClumKernel_M(:,startBin:endBin) == 1,2);
+        missListOFF = all(SClumKernel_M(:,startBin:endBin) ~= 1,2);
 
         % Power Off During Window
         SCLum_hitRate(binNum,1,a) = 100*(sum(hitListOFF)/(sum(hitListOFF)+sum(missListOFF)));
@@ -190,10 +190,10 @@ for a = 1:length(animals)
         endBin       = (windowSpanMS*binNum);
 
         % List of trials for hits/misses with power on during critical window
-        hitListON   = any(SCgabKernel_H(:,startBin:endBin) == 1,2);
-        hitListOFF  = any(SCgabKernel_H(:,startBin:endBin) ~= 1,2);
-        missListON  = any(SCgabKernel_M(:,startBin:endBin) == 1,2);
-        missListOFF = any(SCgabKernel_M(:,startBin:endBin) ~= 1,2);
+        hitListON   = all(SCgabKernel_H(:,startBin:endBin) == 1,2);
+        hitListOFF  = all(SCgabKernel_H(:,startBin:endBin) ~= 1,2);
+        missListON  = all(SCgabKernel_M(:,startBin:endBin) == 1,2);
+        missListOFF = all(SCgabKernel_M(:,startBin:endBin) ~= 1,2);
 
         % Power Off During Window
         SCGab_hitRate(binNum,1,a) = 100*(sum(hitListOFF)/(sum(hitListOFF)+sum(missListOFF)));
