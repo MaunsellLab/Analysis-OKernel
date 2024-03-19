@@ -351,23 +351,6 @@ for c = 1:3
 end
 %% Figure Showing Kernel Profile of Selected Trials
 
-
-
-
-% Kernel for OFF Trials
-plot(OFFx, OFFCIs(2, :), 'Color', '[0.5 0.5 0.5]', 'LineStyle', '-', 'LineWidth',2);
-OFFx2 = [OFFx, fliplr(OFFx)];
-OFFfillCI = [OFFCIs(1, :), fliplr(OFFCIs(3, :))];
-fill(OFFx2, OFFfillCI, 'k', 'lineStyle', '-', 'edgeColor', '[0.5, 0.5, 0.5]', 'edgeAlpha', 0.5, 'faceAlpha', 0.10);
-% Kernel for ON Trials
-plot(ONx, ONCIs(2, :), 'Color', 'k', 'LineStyle', '-', 'LineWidth',2);
-ONx2 = [ONx, fliplr(ONx)];
-ONfillCI = [ONCIs(1, :), fliplr(ONCIs(3, :))];
-fill(ONx2, ONfillCI, 'k', 'lineStyle', '-', 'edgeColor', 'k', 'edgeAlpha', 0.5, 'faceAlpha', 0.10);
-
-ONfillCI = [ONCIs(1, :), fliplr(ONCIs(3, :))];
-
-
 % Figure Set Up
 bins = 800;
 ONx  = 1:size(ONCIs, 2);
@@ -375,12 +358,26 @@ OFFx = 1:size(OFFCIs,2);
 [plotStartMS, plotEndMS, plotRTStartMS] = plotLimits();
 yLabel = 'Normalized Power';
 
+
+% Kernel for OFF Trials
+%plot(OFFx, OFFCIs(2, :), 'Color', '[0.5 0.5 0.5]', 'LineStyle', '-', 'LineWidth',2);
+ONx2 = [ONx, fliplr(ONx)];
+OFFx2 = [OFFx, fliplr(OFFx)];
+
+ONfillCI = [std(SClumKernel_ON,1)/sqrt(size(SClumKernel_ON,1)), fliplr(std(SClumKernel_ON,1)/sqrt(size(SClumKernel_ON,1)))];
+OFFfillCI = [std(SClumKernel_OFF,1)/sqrt(size(SClumKernel_OFF,1)), fliplr(std(SClumKernel_OFF,1)/sqrt(size(SClumKernel_OFF,1)))];
+
+
+
 figure('Units', 'inches', 'Position', [3, 1, 8, 8]);
 axis square
 plot([0, bins], [0, 0], 'Color', 'k', 'LineStyle','--');
 hold on;
+% OFF
+plot(OFFx, mean(SClumKernel_OFF,1), 'Color', '[0.5 0.5 0.5]', 'LineStyle', '-', 'LineWidth',2);
+fill(OFFx2, OFFfillCI, 'k', 'lineStyle', '-', 'edgeColor', '[0.5, 0.5, 0.5]', 'edgeAlpha', 0.5, 'faceAlpha', 0.10);
+% ON 
 plot(ONx,mean(SClumKernel_ON,1), 'Color', 'k', 'LineStyle', '-', 'LineWidth',2);
-
 fill(ONx2, ONfillCI, 'k', 'lineStyle', '-', 'edgeColor', 'k', 'edgeAlpha', 0.5, 'faceAlpha', 0.10);
 
 ax = gca;
@@ -398,6 +395,6 @@ ax.XMinorGrid = 'on';
 ax.MinorGridLineStyle = '--';
 ax.XAxis.MinorTickValues = [0 100 200 300 500 600 700 800];
 xlabel('Time Relative to Stimulus');
-ylim([-1.0 1.0]);
+ylim([-1.05 1.05]);
 legend('','LED OFF', '', 'LED ON');
 hold off;

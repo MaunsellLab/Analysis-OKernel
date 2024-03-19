@@ -1,12 +1,12 @@
-% Use After running areaOverKernel_GrandAv_MeanMatch_iter which bootstraps across
+% Use After running areaOverKernel_GrandAv_iter which bootstraps across
 % each time bin to compute the AOK distribution. 
 % This script checks which bins were significant to plot 
 % line of significant AOKs
 
-% Because it's a rolling 25 ms window, I didn't test 25 ms at the beginning 
+% In the original version of this I didn't test 100 ms at the beginning 
 % and end so we can set those to nans 
 
-% First 25 untested bins
+% First 100 untested bins
 % V1 Data
 v1p_lum(1,1:25) = nan;
 v1p_gab(1,1:25) = nan;
@@ -14,13 +14,14 @@ v1p_gab(1,1:25) = nan;
 scp_lum(1,1:25) = nan;
 scp_gab(1,1:25) = nan;
 
-% last 25 bins
+% last 100 bins
 % V1 Data
-v1p_lum(1,776:800) = nan;
-v1p_gab(1,776:800) = nan;
+v1p_lum(1,776:end) = nan;
+v1p_gab(1,776:end) = nan;
 % SC Data
-scp_lum(1,776:800) = nan;
-scp_gab(1,776:800) = nan;
+scp_lum(1,776:end) = nan;
+scp_gab(1,776:end) = nan;
+
 
 
 % Convert Vectors to T/F

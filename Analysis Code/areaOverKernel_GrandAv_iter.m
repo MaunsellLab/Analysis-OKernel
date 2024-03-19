@@ -133,8 +133,6 @@ lum_nHit = size(lumProfiles.hitProfiles,1);
 gab_nHit = size(gabProfiles.hitProfiles,1);
 lum_nTotal = size(lumKernel,1);
 gab_nTotal = size(gabKernel,1);
-
-
 %% Bootstrap over each bin
 
 % Init Archives For BootStrap Samples
@@ -142,7 +140,9 @@ lumBootsAOK_V1 = zeros(bootSamps, 800);
 gabBootsAOK_V1 = zeros(bootSamps, 800);
 
 % Bin to Start Computing AOK
-startBin = analysisStartBin;
+lookBack = floor(analysisDurMS/2);
+startBin = analysisStartBin-lookBack;
+
 
 for binNum = analysisStartBin:analysisEndBin
     for bootNum = 1:bootSamps
@@ -284,7 +284,8 @@ gab_nTotal = size(gabKernel,1);
 lumBootsAOK_SC = zeros(bootSamps, 800);
 gabBootsAOK_SC = zeros(bootSamps, 800);
 
-startBin = analysisStartBin;
+lookBack = floor(analysisDurMS/2);
+startBin = analysisStartBin-lookBack;
 
 for binNum = analysisStartBin:analysisEndBin
     for bootNum = 1:bootSamps
