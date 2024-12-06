@@ -7,8 +7,8 @@ function bootRTFastSlow
 
 % Get the bootstrap samples for the kernel(s)
  
-  dataDirName = '/Users/Shared/Data/OKernel/';
-	tableDataName = [dataDirName ' Analysis/Processed Files.mat'];
+  [~, analysisDirName] = whichData();
+	tableDataName = [analysisDirName 'Mat Files/Processed Files.mat'];
   limits.minSessions = 8;   % at least 8 sessions for each animal
   limits.criterion = 0.0;   % no kernel significance criterion
   limits.animal = 'All';    % all animals
@@ -18,7 +18,7 @@ function bootRTFastSlow
   limits.stimStr = {'Steps', 'Ramps'};
   for r = 1:2
     limits.rampMS = rampMS(r);
-    doOneStim(dataDirName, tableDataName, limits, numBS, r);
+    doOneStim(analysisDirName, tableDataName, limits, numBS, r);
   end
   plots = 1:10;
   yLimits = sameYAxisScaling(5, 2, plots);

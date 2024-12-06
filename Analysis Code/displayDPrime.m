@@ -7,8 +7,8 @@ function displayDPrime
 %   rampMS = 500;
 %   animals = {'902', '1112', '1150'};
   
-	dataDirName = '/Users/Shared/Data/OKernel/';
-  load([dataDirName ' Analysis/Mat Files/masterTable.mat'], 'T');
+  [~, analysisDirName] = whichData();
+  load([analysisDirName 'Mat Files/masterTable.mat'], 'T');
   limits = setLimits('All');
   limits.rampMS = rampMS;
 	limits.animal = animals;

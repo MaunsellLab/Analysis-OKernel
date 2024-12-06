@@ -1,7 +1,7 @@
 function [respLimitsMS, newIndices, fitCum, endCumTimeMS, fitStats, respLimitCIMS] = ...
         getResponseLimits(file, trials, indices, doCIs)
 %
-% Use the cumulative RT distribution to find the time range in which responses actually occurred.
+% The the cumulative RT distribution to find the time range in which responses actually occurred.
 % Adjust the contents of indices to exclude RT outside this range.  We fit a logistic function to the FA detrended
 % cumulative response function and then take upper and lower points of the response function to set the time when
 % the response window starts and ends.
@@ -24,7 +24,9 @@ function [respLimitsMS, newIndices, fitCum, endCumTimeMS, fitStats, respLimitCIM
   % Set the time limits, and clip off the early and late RTs, keeping track of their numbers
   endCumTimeMS = 2000;
   startTime = -file.preStimMinMS;
-  endTime = min(file.responseLimitMS, endCumTimeMS);
+  % Note this was changed by JJC
+  % endTime = min(file.responseLimitMS, endCumTimeMS); 
+  endTime = min(file.reactMS, endCumTimeMS);
 
   % make a cumulative distribution, using the early and late numbers to set the start and end points
   numTotal = length(allRTs);
@@ -51,20 +53,23 @@ function [respLimitsMS, newIndices, fitCum, endCumTimeMS, fitStats, respLimitCIM
   end
   % create new indices that make RTs before the newly found response interval earlies and those after the 
   % newly found response intervals fails
-%   newIndices.correct = trialEnds == 0 & RTs >= respLimitsMS(1) & RTs < respLimitsMS(2);
-%   newIndices.early = trialEnds == 1 & RTs < respLimitsMS(1);
-%   newIndices.fail = trialEnds == 2 & RTs >= respLimitsMS(2);
-  
+
   newIndices.correct = trialEnds == 0 & RTs >= respLimitsMS(1) & RTs < respLimitsMS(2);
   newIndices.early = (trialEnds == 1 | trialEnds == 0) & RTs < respLimitsMS(1);
-  newIndices.fail = (trialEnds == 2 | trialEnds == 0) & RTs >= respLimitsMS(2);
+  newIndices.fail = (trialEnds == 2);
+
 
 end
 
 function [respLimitsMS, fitStats, fitCum] = respLimits(RTs, file, numEarly, numTotal, startTime, endTime)
 
-  upperLimit = 0.975;   % upper point on cumulative hit function, ending response window
-  lowerLimit = 0.025;   % lower point on cumulative hit function, starting response window
+  keepPCEarlyResp = 0.02;   % lower retention bound on cumulative hit function, 
+  % starts response window, percentage of responses before this are set to False Alarms
+  
+  dropPCLateResp = 0.08;   % upper retention on cumulative hit function, 
+  % ends response window,  responses after 1-dropPCLateResp are not considered hits
+  % or misses
+
   RTDist = zeros(1, endTime - startTime);
   for i = 1:length(RTs)
     bin = RTs(i) - startTime + 1;
@@ -89,5 +94,7 @@ function [respLimitsMS, fitStats, fitCum] = respLimits(RTs, file, numEarly, numT
   [fitResult, fitStats] = fit(xData', deSloped', ft, opts); 
   fitCum = (fitResult.c + (fitResult.b - fitResult.c) ./ (1 + (xData ./ fitResult.a).^fitResult.d)) + ...
       xData * b(1) + b(2);
-  respLimitsMS = fitResult.a .* exp(log(1 ./ [upperLimit, lowerLimit] - 1) ./ fitResult.d) + startTime;
+  %respLimitsMS = fitResult.a .* exp(log(1 ./ [keepPercent, dropPercent] - 1) ./ fitResult.d) + startTime;
+  respLimitsMS = fitResult.a .* exp(log(1 ./ [(1-keepPCEarlyResp), dropPCLateResp] - 1) ./ fitResult.d) + startTime;
+
 end

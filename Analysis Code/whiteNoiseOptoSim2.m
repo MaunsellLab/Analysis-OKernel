@@ -19,10 +19,12 @@ function [pOptoHit, hitMissErr, oneKernel2Err, weightedErr] = whiteNoiseOptoSim2
 
   optoEffect = zeros(1, 20);
   optoEffect(3:10) = -[3 3 3 2.5 2.0 1.5 1.0 0.5] / 50;
+  figure;
+  plot(optoEffect)
 
   %% Construct random opto patterns and assign hits
 
-  oStims = round(rand(nTrials, length(optoEffect)));
+  oStims = round(rand(nTrials, length(optoEffect))); % Binary White Noise, 1,0 per bin 
   oTrials = (rand(nTrials, 1) < pOpto);
   nOpto = sum(oTrials);
   hits = rand(nTrials, 1) < baseHitRate + oTrials .* sum(optoEffect .* oStims, 2);

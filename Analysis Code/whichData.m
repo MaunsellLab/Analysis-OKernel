@@ -1,5 +1,24 @@
-function [dirName, tableName, projName] = whichData()
+function [dataDirName, analysisDirName, tableName] = whichData(condition)
 
-projName = 'JDC';
-tableName = sprintf(' Analysis/Mat Files/masterTable.mat');
-dirName = '/Users/Shared/Data/OKernel/';
+% 'Condition specifies what data you are going to batch analyze 
+% possible inputs:
+% SC Gabor'
+% 'SC Lum'
+% 'SC Offset'
+% 'V1 Gabor'
+% 'V1 Lum'
+% 'V1 Offset'
+% 'V1 Lum MM' (Mean Matched)
+% 'V1 Gabor MM' (Mean Matched) 
+
+if contains(computerName(), 'maunsell')
+	dataDirName = '../../../Data/OKernel/';
+	analysisDirName = '../../Analysis-OKernel/';
+    tableName = sprintf('Mat Files/masterTable.mat');
+else    
+	dataDirName = ['/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/BehavData/' condition '/'];
+	%analysisDirName = '../../Analysis-OKernel/';
+    analysisDirName = '/Users/jacksoncone/Dropbox/PostDoctoral Projects/!Experiments/Colliculus/MasterFiles/';
+    tableName = sprintf('/masterTable.mat');
+end
+
